@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AETHON — For those who think in the dark</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&display=swap" rel="stylesheet">
+
+<style>
+  @font-face {
+    font-family: "Helvetica Regular";
+    src: url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.eot");
+    src: url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.eot?#iefix")format("embedded-opentype"),
+         url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.woff2")format("woff2"),
+         url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.woff")format("woff"),
+         url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.ttf")format("truetype"),
+         url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.svg#Helvetica Regular")format("svg");
+    font-display: swap;
+  }
+
+  :root{
+    --sans: "Helvetica Regular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --serif: "Fraunces", "Tiempos", Georgia, serif;
+    --midnight:#0A0A0F;
+    --sky:#5B8DB8;
+    --cloud:#D6E4F0;
+    --cream:#F0EDE6;
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  html{ background: var(--midnight); }
+  body{
+    font-family: var(--sans);
+    color: rgba(255,255,255,0.7);
+    background: var(--midnight);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+  ::selection{ background: rgba(255,255,255,0.2); color:#fff; }
+  a{ color:inherit; text-decoration:none; }
+  img,svg,video{ display:block; max-width:100%; }
+  button{ font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+
+  /* ----- Main shell ----- */
+  main.stage{
+    position: relative;
+    width: 100%;
+    min-height: 115vh;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: var(--sans);
+  }
+
+  /* ----- Fixed background video ----- */
+  .bg-video{
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+  .bg-tint{
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 1;
+    background:
+      radial-gradient(60% 50% at 50% 30%, transparent 0%, rgba(10,10,15,.18) 70%, rgba(10,10,15,.55) 100%),
+      linear-gradient(180deg, rgba(10,10,15,.45) 0%, transparent 28%, transparent 62%, rgba(10,10,15,.55) 100%);
+  }
+
+  /* ----- Content wrapper ----- */
+  .content{
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 80rem;
+    padding: 0 28px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 115vh;
+  }
+
+  /* ----- Nav ----- */
+  nav.top{
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 32px 4px 0;
+    color: #fff;
+  }
+  .brand{
+    display:flex; align-items:center; gap: 12px;
+    color:#fff;
+  }
+  .brand svg{ width:24px; height:24px; }
+  .brand-name{
+    font-family: var(--sans);
+    font-size: 20px; font-weight: 500; letter-spacing: 0.32em;
+  }
+  .nav-links{
+    display: flex; gap: 36px;
+    font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+  }
+  .nav-links a{ transition: color .25s; }
+  .nav-links a:hover{ color:#fff; }
+  .nav-cta{
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: #fff;
+    padding: 10px 22px;
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 999px;
+    transition: background .3s, color .3s, border-color .3s;
+  }
+  .nav-cta:hover{ background: #fff; color: var(--midnight); border-color: #fff; }
+  @media (max-width: 880px){
+    .nav-links{ display:none; }
+    nav.top{ padding-top: 24px; }
+  }
+
+  /* ----- Upper CTA / Headline ----- */
+  .cta-block{
+    padding: clamp(60px, 14vh, 180px) 4px 0;
+    color: #fff;
+    max-width: 980px;
+  }
+  .eyebrow{
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 10.5px; letter-spacing: 0.32em; text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    padding: 8px 16px;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    margin-bottom: 32px;
+  }
+  .eyebrow .dot{
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--sky);
+    box-shadow: 0 0 12px var(--sky);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ opacity:.5; transform: scale(.9);}
+    50%{ opacity: 1; transform: scale(1.1);}
+  }
+
+  h1.hero{
+    font-family: var(--serif);
+    font-weight: 300;
+    font-variation-settings: "opsz" 144;
+    font-size: clamp(48px, 9vw, 144px);
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+    color: var(--cream);
+    margin: 0 0 36px;
+    text-wrap: balance;
+  }
+  h1.hero em{
+    font-style: italic;
+    font-weight: 300;
+    color: rgba(255,255,255,0.65);
+  }
+
+  .hero-row{
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 40px; flex-wrap: wrap;
+  }
+  .hero-sub{
+    max-width: 420px;
+    font-size: 14px; line-height: 1.7;
+    color: rgba(255,255,255,0.7);
+    margin: 0;
+  }
+  .ghost-cta{
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 14px 26px;
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 999px;
+    color: #fff;
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    transition: background .3s, color .3s, border-color .3s;
+  }
+  .ghost-cta:hover{ background: #fff; color: var(--midnight); border-color: #fff; }
+  .ghost-cta svg{ width: 14px; height: 14px; }
+
+  /* ----- Mid breathing space (between CTA & footer) ----- */
+  .spacer{ flex: 1; min-height: 200px; }
+
+  /* ----- Liquid Glass footer ----- */
+  .liquid-glass {
+    background: rgba(255, 255, 255, 0.01);
+    background-blend-mode: luminosity;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: none;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .liquid-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1.4px;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.15) 20%,
+      rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%,
+      rgba(255,255,255,0.15) 80%, rgba(255,255,255,0.45) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  footer.aethon{
+    width: 100%;
+    border-radius: 24px;
+    padding: 28px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 128px;
+    opacity: 0;
+    transform: translateY(40px);
+    animation: footer-in 1s cubic-bezier(.2,.7,.2,1) .4s forwards;
+  }
+  @media (min-width: 768px){
+    footer.aethon{ padding: 40px; margin-top: 256px; }
+  }
+  @keyframes footer-in{
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  .f-grid{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+  @media (min-width: 768px){
+    .f-grid{
+      grid-template-columns: repeat(12, 1fr);
+      gap: 48px;
+    }
+  }
+  .f-brand{ grid-column: span 1; }
+  .f-links{ grid-column: span 1; }
+  @media (min-width: 768px){
+    .f-brand{ grid-column: span 5; }
+    .f-links{ grid-column: span 7; }
+  }
+
+  .f-brand .logo-row{
+    display: flex; align-items: center; gap: 10px;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+  .f-brand .logo-row svg{ width: 24px; height: 24px; }
+  .f-brand .logo-row span{
+    font-size: 20px; font-weight: 500; letter-spacing: 0.28em;
+  }
+  .f-brand .desc{
+    font-size: 14px; line-height: 1.65;
+    max-width: 380px;
+    color: rgba(255,255,255,0.6);
+    margin: 0;
+  }
+  .f-brand .desc em{
+    font-family: var(--serif); font-style: italic; font-weight: 300;
+    color: rgba(255,255,255,0.85);
+  }
+
+  .f-cols{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  @media (max-width: 600px){ .f-cols{ grid-template-columns: 1fr 1fr; gap: 28px; } }
+  .f-cols h4{
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #fff;
+    font-weight: 500;
+    margin: 0 0 16px;
+  }
+  .f-cols ul{
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 10px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+  }
+  .f-cols ul a{ transition: color .25s; }
+  .f-cols ul a:hover{ color: #fff; }
+
+  .f-bottom{
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.10);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: space-between;
+    gap: 16px;
+  }
+  @media (min-width: 768px){
+    .f-bottom{ flex-direction: row; gap: 16px; }
+  }
+  .f-bottom .curated{
+    font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+    opacity: 0.5; margin: 0;
+  }
+  .f-social{
+    display: flex; align-items: center; gap: 16px;
+  }
+  .f-social .label{
+    font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+    opacity: 0.5;
+  }
+  .f-social .icons{ display: flex; align-items: center; gap: 14px; }
+  .f-social .icons a{
+    opacity: 0.7; transition: opacity .25s, color .25s;
+    color: rgba(255,255,255,0.85);
+  }
+  .f-social .icons a:hover{ opacity: 1; color: #fff; }
+  .f-social .icons svg{ width: 16px; height: 16px; }
+
+  /* ----- Tweaks panel ----- */
+  .tw-panel{
+    position: fixed; bottom: 20px; right: 20px; z-index: 10000;
+    width: 280px;
+    background: rgba(10,10,15,0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 18px;
+    color: rgba(255,255,255,0.85);
+    font-family: var(--sans); font-size: 12px;
+    display: none;
+    box-shadow: 0 24px 60px rgba(0,0,0,.6);
+  }
+  .tw-panel.is-open{ display: block; }
+  .tw-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom: 14px;}
+  .tw-head h5{ margin:0; font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:#fff; font-weight: 500;}
+  .tw-close{ font-size:18px; color:#fff; line-height:1; }
+  .tw-row{ display:flex; flex-direction:column; gap:6px; margin-bottom: 12px;}
+  .tw-row label{ font-size: 10px; letter-spacing:.18em; text-transform:uppercase; color: rgba(255,255,255,0.5);}
+  .tw-row textarea{
+    background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px; padding: 8px; font: 400 12px var(--sans); resize: vertical; min-height: 56px;
+  }
+  .tw-row .check{ display: flex; align-items: center; gap: 10px; }
+  .tw-seg{ display: flex; border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; overflow: hidden; }
+  .tw-seg button{
+    flex:1; padding: 7px 4px; font-size: 9.5px; letter-spacing: .18em; text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    border-right: 1px solid rgba(255,255,255,0.12);
+  }
+  .tw-seg button:last-child{ border-right: 0; }
+  .tw-seg button.is-on{ background: #fff; color: var(--midnight); }
+</style>
+</head>
+<body>
+
+<main class="stage" data-screen-label="01 Immersive">
+
+  <!-- Fixed background video -->
+  <video class="bg-video" autoplay muted loop playsinline preload="auto">
+    <source src="assets/aethon-hero.mp4" type="video/mp4" />
+  </video>
+  <div class="bg-tint" aria-hidden="true"></div>
+
+  <!-- Content wrapper -->
+  <div class="content">
+
+    <!-- Top nav -->
+    <nav class="top">
+      <div class="brand">
+        <!-- Custom interlocking square logo (original AETHON mark) -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+          <!-- Outer ring -->
+          <path d="M128 8C61.726 8 8 61.726 8 128s53.726 120 120 120 120-53.726 120-120S194.274 8 128 8zm0 16c57.438 0 104 46.562 104 104s-46.562 104-104 104S24 185.438 24 128 70.562 24 128 24z"/>
+          <!-- Inner glow -->
+          <path d="M128 64a64 64 0 1 0 0 128 64 64 0 0 0 0-128zm0 16a48 48 0 1 1 0 96 48 48 0 0 1 0-96z" opacity="0.65"/>
+          <!-- Core -->
+          <circle cx="128" cy="128" r="14"/>
+        </svg>
+        <span class="brand-name">AETHON</span>
+      </div>
+
+      <div class="nav-links">
+        <a href="#">Objects</a>
+        <a href="#">Ritual</a>
+        <a href="#">Journal</a>
+        <a href="#">Letters</a>
+      </div>
+
+      <a href="#" class="nav-cta">Enter the quiet</a>
+    </nav>
+
+    <!-- Upper CTA / Headline -->
+    <div class="cta-block">
+      <div class="eyebrow"><span class="dot"></span> Est. MMXXVI &nbsp;·&nbsp; Mindful Objects</div>
+      <h1 class="hero" id="heroHeadline">Read the universe.<br/><em>One page at a time.</em></h1>
+      <div class="hero-row">
+        <p class="hero-sub">Aethon adalah ruang sunyi untuk pikiran yang haus akan cahaya. Objek-objek harian — jurnal, lilin, teh — yang dibuat untuk menemani jam-jam paling tenang dalam satu hari.</p>
+        <a href="#" class="ghost-cta">
+          Begin the ritual
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h8M7 2l4 4-4 4"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- Liquid glass footer -->
+    <footer class="liquid-glass aethon">
+
+      <div class="f-grid">
+        <!-- Brand col (5/12) -->
+        <div class="f-brand">
+          <div class="logo-row">
+            <!-- AETHON original mark (no copying of other brands) -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">
+              <path d="M128 8C61.726 8 8 61.726 8 128s53.726 120 120 120 120-53.726 120-120S194.274 8 128 8zm0 16c57.438 0 104 46.562 104 104s-46.562 104-104 104S24 185.438 24 128 70.562 24 128 24z"/>
+              <path d="M128 64a64 64 0 1 0 0 128 64 64 0 0 0 0-128zm0 16a48 48 0 1 1 0 96 48 48 0 0 1 0-96z" opacity="0.65"/>
+              <circle cx="128" cy="128" r="14"/>
+            </svg>
+            <span>AETHON</span>
+          </div>
+          <p class="desc">Aethon membuat objek-objek harian untuk pikiran yang ingin pulang ke dalam dirinya sendiri. <em>For those who think in the dark.</em></p>
+        </div>
+
+        <!-- Links cols (7/12) -->
+        <div class="f-links">
+          <div class="f-cols">
+            <div>
+              <h4>The Library</h4>
+              <ul>
+                <li><a href="#">Journals & Paper</a></li>
+                <li><a href="#">Candles & Scent</a></li>
+                <li><a href="#">Herbal Teas</a></li>
+                <li><a href="#">Prints & Posters</a></li>
+                <li><a href="#">Digital Goods</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4>The Mission</h4>
+              <ul>
+                <li><a href="#">Manifesto</a></li>
+                <li><a href="#">Origin Story</a></li>
+                <li><a href="#">The Studio</a></li>
+                <li><a href="#">Press & Notes</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4>Concierge</h4>
+              <ul>
+                <li><a href="#">Get in Touch</a></li>
+                <li><a href="#">Shipping & Care</a></li>
+                <li><a href="#">Privacy</a></li>
+                <li><a href="#">Terms of Use</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom bar -->
+      <div class="f-bottom">
+        <p class="curated">© MMXXVI — Curated by Aethon Studio · Jakarta</p>
+        <div class="f-social">
+          <span class="label">Join the quiet:</span>
+          <div class="icons">
+            <!-- Spotify -->
+            <a href="#" aria-label="Spotify">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 11.2c2.5-1 6-1 8.5.5"/><path d="M8.5 14.2c2-.6 4.5-.6 6.5.5"/><path d="M7 8.5c3.5-1 8-1 11 1"/></svg>
+            </a>
+            <!-- Instagram -->
+            <a href="#" aria-label="Instagram">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+            </a>
+            <!-- X / Twitter -->
+            <a href="#" aria-label="Twitter">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+            </a>
+            <!-- YouTube -->
+            <a href="#" aria-label="YouTube">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></svg>
+            </a>
+            <!-- Newsletter / Mail -->
+            <a href="#" aria-label="Newsletter">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+</main>
+
+<!-- ============ Tweaks ============ -->
+<script>
+  window.__AETHON_TWEAKS = /*EDITMODE-BEGIN*/{
+    "heroHeadline": "Read the universe.\nOne page at a time.",
+    "showTint": false,
+    "footerWidth": "wide"
+  }/*EDITMODE-END*/;
+</script>
+
+<div class="tw-panel" id="twPanel">
+  <div class="tw-head">
+    <h5>Tweaks</h5>
+    <button class="tw-close" id="twClose" aria-label="Close">×</button>
+  </div>
+  <div class="tw-row">
+    <label>Hero headline</label>
+    <textarea id="twHeadline" rows="3"></textarea>
+  </div>
+  <div class="tw-row">
+    <label>Video tint</label>
+    <div class="tw-seg" data-key="showTint">
+      <button data-val="true">On</button>
+      <button data-val="false">Off</button>
+    </div>
+  </div>
+  <div class="tw-row">
+    <label>Footer width</label>
+    <div class="tw-seg" data-key="footerWidth">
+      <button data-val="narrow">Narrow</button>
+      <button data-val="wide">Wide</button>
+      <button data-val="full">Full</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Apply initial tweaks */
+(function(){
+  const t = window.__AETHON_TWEAKS;
+  // Headline (preserve <em> on second line — split on newline)
+  const h = document.getElementById('heroHeadline');
+  const lines = t.heroHeadline.split('\n');
+  h.innerHTML = lines.map((ln,i)=> i===0 ? escapeHtml(ln) : `<em>${escapeHtml(ln)}</em>`).join('<br/>');
+  document.querySelector('.bg-tint').style.display = t.showTint ? 'block' : 'none';
+  applyFooterWidth(t.footerWidth);
+
+  function escapeHtml(s){
+    return s.replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  }
+  function applyFooterWidth(w){
+    const c = document.querySelector('.content');
+    if(w==='narrow') c.style.maxWidth = '64rem';
+    else if(w==='wide') c.style.maxWidth = '80rem';
+    else c.style.maxWidth = '92rem';
+  }
+  window.__applyFooterWidth = applyFooterWidth;
+})();
+
+/* Tweaks panel host protocol */
+(function(){
+  const panel = document.getElementById('twPanel');
+  const t = window.__AETHON_TWEAKS;
+
+  function persist(edits){
+    Object.assign(t, edits);
+    try{ window.parent.postMessage({type:'__edit_mode_set_keys', edits}, '*'); }catch(e){}
+  }
+
+  window.addEventListener('message', (e)=>{
+    if(!e.data || typeof e.data !== 'object') return;
+    if(e.data.type === '__activate_edit_mode'){ panel.classList.add('is-open'); }
+    if(e.data.type === '__deactivate_edit_mode'){ panel.classList.remove('is-open'); }
+  });
+  try{ window.parent.postMessage({type:'__edit_mode_available'}, '*'); }catch(e){}
+
+  document.getElementById('twClose').addEventListener('click', ()=>{
+    panel.classList.remove('is-open');
+    try{ window.parent.postMessage({type:'__edit_mode_dismissed'}, '*'); }catch(e){}
+  });
+
+  // Headline
+  const head = document.getElementById('twHeadline');
+  head.value = t.heroHeadline;
+  head.addEventListener('input', ()=>{
+    const h = document.getElementById('heroHeadline');
+    const lines = head.value.split('\n');
+    h.innerHTML = lines.map((ln,i)=>{
+      const esc = ln.replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+      return i===0 ? esc : `<em>${esc}</em>`;
+    }).join('<br/>');
+    persist({heroHeadline: head.value});
+  });
+
+  // Segmented controls
+  document.querySelectorAll('.tw-seg').forEach(seg=>{
+    const key = seg.dataset.key;
+    function paint(v){ seg.querySelectorAll('button').forEach(b=> b.classList.toggle('is-on', String(b.dataset.val)===String(v))); }
+    paint(t[key]);
+    seg.querySelectorAll('button').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        let v = b.dataset.val;
+        if(v==='true') v = true;
+        else if(v==='false') v = false;
+        paint(v);
+        if(key==='showTint'){
+          document.querySelector('.bg-tint').style.display = v ? 'block' : 'none';
+        }
+        if(key==='footerWidth' && window.__applyFooterWidth){
+          window.__applyFooterWidth(v);
+        }
+        persist({[key]: v});
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

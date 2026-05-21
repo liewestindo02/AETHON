@@ -1,0 +1,1650 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AETHON — For those who think in the dark</title>
+
+<style>
+  @font-face {
+    font-family: "Helvetica Regular";
+    src: url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.eot");
+    src: url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.eot?#iefix")format("embedded-opentype"),
+         url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.woff2")format("woff2"),
+         url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.woff")format("woff"),
+         url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.ttf")format("truetype"),
+         url("https://db.onlinewebfonts.com/t/a64ff11d2c24584c767f6257e880dc65.svg#Helvetica Regular")format("svg");
+    font-display: swap;
+  }
+
+  :root{
+    --sans: "Helvetica Regular", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --serif: ui-serif, Georgia, "Times New Roman", serif;
+    --bg: #f0f0f0;
+    --ink: rgba(30, 50, 90, 0.9);
+    --ink-soft: rgba(30, 50, 90, 0.6);
+    --ink-faint: rgba(30, 50, 90, 0.1);
+    --cream: #F0EDE6;
+    --cloud: #D6E4F0;
+    --sky: #5B8DB8;
+  }
+
+  *,*::before,*::after{ box-sizing: border-box; }
+  html, body{ margin: 0; padding: 0; }
+  body{
+    font-family: var(--sans);
+    margin: 0;
+    overflow-x: hidden;
+    background-color: #0A0A0F;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection{ background: rgba(30,50,90,.18); color: var(--ink); }
+  a{ color: inherit; text-decoration: none; }
+  img, svg, video{ display: block; max-width: 100%; }
+  button{ font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; }
+  ul{ list-style: none; padding: 0; margin: 0; }
+
+  /* ----- Fixed page background video (shared across ALL sections) ----- */
+  .page-bg-video{
+    position: fixed; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: -2;
+  }
+  .page-bg-tint{
+    position: fixed; inset: 0; pointer-events: none; z-index: -1;
+    background:
+      radial-gradient(80% 60% at 50% 50%, transparent 0%, rgba(10,10,15,0.35) 70%, rgba(10,10,15,0.6) 100%),
+      linear-gradient(180deg, rgba(10,10,15,.4) 0%, transparent 22%, transparent 78%, rgba(10,10,15,.5) 100%);
+  }
+
+  /* ----- Outer stage ----- */
+  main.stage{
+    min-height: 100vh;
+    background: transparent;
+  }
+  .hero-wrap{
+    width: 100%;
+    height: 100vh;
+    min-height: 720px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background: transparent;
+  }
+  @media (min-width: 768px){ .hero-wrap{ padding: 20px; } }
+
+  /* ----- Hero card (frame only — video lives at page level) ----- */
+  .hero-card{
+    position: relative;
+    width: 100%;
+    max-width: 1536px;
+    height: 100%;
+    border-radius: 24px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: transparent;
+    isolation: isolate;
+  }
+  @media (min-width: 768px){ .hero-card{ border-radius: 48px; } }
+  /* readability tint inside the card */
+  .hero-card::after{
+    content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background:
+      radial-gradient(70% 60% at 50% 35%, transparent 0%, rgba(10,10,15,0.2) 70%, rgba(10,10,15,0.55) 100%),
+      linear-gradient(180deg, rgba(10,10,15,.3) 0%, transparent 25%, transparent 65%, rgba(10,10,15,.35) 100%);
+  }
+
+  .content-layer{
+    position: relative; z-index: 10;
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column; align-items: center;
+  }
+
+  /* ----- Navbar ----- */
+  nav.bar{
+    width: 100%;
+    padding: 24px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: relative; z-index: 10;
+    color: var(--cream);
+  }
+  @media (min-width: 768px){ nav.bar{ padding: 24px 40px; } }
+  .nav-spacer{ flex: 1; display: none; }
+  @media (min-width: 768px){ .nav-spacer{ display: block; } }
+
+  .menu{
+    display: none;
+    align-items: center;
+    gap: 32px;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(240,237,230,0.85);
+  }
+  @media (min-width: 768px){ .menu{ display: flex; } }
+  .menu li{
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: opacity .25s;
+  }
+  .menu li:hover{ opacity: 0.7; }
+  .menu li .chev{
+    width: 16px; height: 16px;
+    transition: transform .25s;
+  }
+  .menu li:hover .chev{ transform: translateX(2px); }
+
+  .mobile-logo{
+    display: block;
+  }
+  @media (min-width: 768px){ .mobile-logo{ display: none; } }
+  .mobile-logo span{
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    font-size: 20px;
+    color: var(--cream);
+  }
+
+  .nav-right{ flex: 1; display: flex; justify-content: flex-end; }
+  /* ===== iOS "Clear" glass — shared mixin ===== */
+  .clear-glass{
+    position: relative;
+    background: rgba(255,255,255,0.06);
+    -webkit-backdrop-filter: blur(10px) saturate(160%);
+    backdrop-filter: blur(10px) saturate(160%);
+    border: none;
+    box-shadow:
+      inset 0 1px 0.5px rgba(255,255,255,0.55),
+      inset 0 -1px 0.5px rgba(255,255,255,0.35),
+      inset 0 0 24px rgba(255,255,255,0.05),
+      0 12px 30px rgba(10,10,15,0.22);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .clear-glass::before{
+    content: ""; position: absolute; inset: 0;
+    border-radius: inherit;
+    padding: 1.2px;
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.85) 0%,
+      rgba(255,255,255,0.30) 18%,
+      rgba(255,255,255,0.0)  45%,
+      rgba(255,255,255,0.0)  60%,
+      rgba(255,255,255,0.30) 82%,
+      rgba(255,255,255,0.85) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .clear-glass::after{
+    content: ""; position: absolute; left: 8%; right: 8%; top: 0; height: 45%;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 100%);
+    filter: blur(2px);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .clear-glass > *{ position: relative; z-index: 2; }
+
+  .btn-cta{
+    display: inline-flex; align-items: center;
+    gap: 8px;
+    color: #fff;
+    border-radius: 999px;
+    padding: 6px 16px 6px 6px;
+    transition: background .3s, transform .25s;
+  }
+  @media (min-width: 768px){ .btn-cta{ gap: 12px; padding: 8px 24px 8px 8px; } }
+  .btn-cta:hover{ background: rgba(255,255,255,0.14); }
+  .btn-cta:active{ transform: scale(0.98); }
+  .btn-cta .icon-wrap{
+    background: rgba(255,255,255,0.22);
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+    padding: 4px;
+    border-radius: 999px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  @media (min-width: 768px){ .btn-cta .icon-wrap{ padding: 6px; } }
+  .btn-cta .icon-wrap svg{ width: 16px; height: 16px; }
+  @media (min-width: 768px){ .btn-cta .icon-wrap svg{ width: 20px; height: 20px; } }
+  .btn-cta .label{ font-size: 12px; }
+  @media (min-width: 768px){ .btn-cta .label{ font-size: 14px; } }
+
+  /* ----- Hero text block ----- */
+  .hero-text{
+    width: 100%;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 32px 24px 0;
+    text-align: center;
+    max-width: 56rem;
+  }
+
+  /* ----- Hero badge (glass pill) ----- */
+  .hero-badge{
+    display: inline-flex; align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    width: fit-content; margin: 0 auto 12px;
+    opacity: 0; transform: translateY(20px);
+    animation: badge-in .6s ease-out .1s forwards;
+  }
+  .hero-badge svg{ width: 16px; height: 16px; color: #fff; }
+  .hero-badge span{
+    font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.95);
+    letter-spacing: 0.01em;
+  }
+  @keyframes badge-in{ to{ opacity: 1; transform: translateY(0); } }
+
+  .hero-h1{
+    font-family: var(--sans);
+    font-size: clamp(36px, 7vw, 80px);
+    font-weight: 400;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+    color: var(--cream);
+    margin: 0 0 8px;
+    text-wrap: balance;
+    opacity: 0; transform: scale(0.98);
+    animation: h1-in .8s ease-out .2s forwards;
+  }
+  @keyframes h1-in{ to{ opacity: 1; transform: scale(1); } }
+
+  .hero-h1 .italic{
+    font-style: italic;
+    font-family: var(--serif);
+    font-weight: 400;
+    color: rgba(240,237,230,0.7);
+  }
+
+  .hero-sub{
+    font-size: 14px;
+    color: rgba(214,228,240,0.85);
+    line-height: 1.6;
+    max-width: 36rem;
+    margin: 0 auto;
+    font-weight: 400;
+    opacity: 0;
+    animation: sub-in .8s ease-out .4s forwards;
+  }
+  @media (min-width: 640px){ .hero-sub{ font-size: 16px; } }
+  @media (min-width: 768px){ .hero-sub{ font-size: 18px; } }
+  @keyframes sub-in{ to{ opacity: 1; } }
+
+  /* ----- Bottom-left glass stat card ----- */
+  .bl-card{
+    position: absolute;
+    bottom: 7rem; right: 16px; left: auto;
+    padding: 12px;
+    border-radius: 19px;
+    background: rgba(255,255,255,0.06);
+    -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(1.08);
+    backdrop-filter: blur(10px) saturate(180%) brightness(1.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow:
+      0 24px 50px -10px rgba(10,10,15,0.45),
+      0 6px 16px -4px rgba(10,10,15,0.35),
+      inset 0 1.5px 0 0 rgba(255,255,255,0.55),
+      inset 0 -1.5px 1px 0 rgba(255,255,255,0.35),
+      inset 1.5px 0 1px -1px rgba(255,255,255,0.25),
+      inset -1.5px 0 1px -1px rgba(255,255,255,0.25),
+      inset 0 0 20px 0 rgba(255,255,255,0.06);
+    display: flex; flex-direction: column; gap: 8px;
+    min-width: 140px;
+    width: fit-content;
+    opacity: 0; transform: translateX(-20px);
+    animation: bl-in .8s ease-out .2s forwards;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  /* chromatic conic gradient border (curved-glass rim) */
+  .bl-card::before{
+    content: ""; position: absolute; inset: 0;
+    border-radius: inherit;
+    padding: 1.4px;
+    background: conic-gradient(from 200deg at 50% 50%,
+      rgba(255,255,255,0.65) 0deg,
+      rgba(180,200,255,0.28) 60deg,
+      rgba(255,255,255,0.08) 130deg,
+      rgba(255,220,200,0.28) 220deg,
+      rgba(255,255,255,0.7) 320deg,
+      rgba(255,255,255,0.65) 360deg);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+  }
+  /* specular highlight (top-left soft sheen) */
+  .bl-card::after{
+    content: ""; position: absolute; inset: 0;
+    border-radius: inherit;
+    background:
+      radial-gradient(60% 50% at 25% 0%, rgba(255,255,255,0.32) 0%, transparent 70%),
+      radial-gradient(40% 40% at 100% 100%, rgba(255,255,255,0.14) 0%, transparent 70%);
+    pointer-events: none;
+    mix-blend-mode: screen;
+    z-index: 1;
+  }
+  .bl-card > *{ position: relative; z-index: 2; }
+  @media (min-width: 768px){
+    .bl-card{ left: 24px; right: auto; bottom: 24px; padding: 16px; border-radius: 24px; min-width: 150px; gap: 8px; }
+  }
+  @media (min-width: 1024px){
+    .bl-card{ bottom: 40px; left: 40px; padding: 20px; border-radius: 35px; min-width: 200px; gap: 12px; }
+  }
+  @keyframes bl-in{ to{ opacity: 1; transform: translateX(0); } }
+  .bl-stat-num{
+    font-size: 24px; font-weight: 400;
+    color: rgba(255,255,255,0.98);
+    text-shadow: 0 1px 2px rgba(10,10,15,0.35);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  @media (min-width: 768px){ .bl-stat-num{ font-size: 30px; } }
+  .bl-stat-label{
+    font-size: 10px; font-weight: 400;
+    color: rgba(255,255,255,0.7);
+    text-shadow: 0 1px 2px rgba(10,10,15,0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  @media (min-width: 768px){ .bl-stat-label{ font-size: 12px; } }
+  .bl-btn{
+    display: inline-flex; align-items: center; gap: 8px;
+    border-radius: 999px;
+    padding: 6px 20px 6px 6px;
+    align-self: flex-start;
+    transition: background .3s, transform .2s;
+  }
+  .bl-btn:hover{ background: rgba(255,255,255,0.16); }
+  .bl-btn:active{ transform: scale(0.98); }
+  .bl-btn .ico{
+    background: rgba(255,255,255,0.22);
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
+    padding: 4px;
+    border-radius: 999px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.95);
+  }
+  .bl-btn .ico svg{ width: 14px; height: 14px; }
+  .bl-btn .lbl{ font-size: 13px; color: rgba(255,255,255,0.95); text-shadow: 0 1px 2px rgba(10,10,15,0.35); }
+
+  /* ----- Bottom-right corner faux-cutout ----- */
+  .br-corner{
+    position: absolute;
+    bottom: 24px; right: 24px;
+    padding: 12px 20px 12px 12px;
+    background: rgba(255,255,255,0.06);
+    -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(1.08);
+    backdrop-filter: blur(10px) saturate(180%) brightness(1.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow:
+      0 24px 50px -10px rgba(10,10,15,0.45),
+      0 6px 16px -4px rgba(10,10,15,0.35),
+      inset 0 1.5px 0 0 rgba(255,255,255,0.55),
+      inset 0 -1.5px 1px 0 rgba(255,255,255,0.35),
+      inset 1.5px 0 1px -1px rgba(255,255,255,0.25),
+      inset -1.5px 0 1px -1px rgba(255,255,255,0.25),
+      inset 0 0 20px 0 rgba(255,255,255,0.06);
+    border-radius: 999px;
+    display: flex; align-items: center;
+    gap: 14px;
+    opacity: 0; transform: translateY(20px);
+    animation: br-in .8s ease-out .4s forwards;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  @media (min-width: 640px){
+    .br-corner{ padding: 14px 24px 14px 14px; gap: 16px; }
+  }
+  @media (min-width: 768px){
+    .br-corner{ bottom: 40px; right: 40px; padding: 16px 28px 16px 16px; gap: 18px; }
+  }
+  @keyframes br-in{ to{ opacity: 1; transform: translateY(0); } }
+
+  /* chromatic conic gradient border (curved-glass rim) */
+  .br-corner::before{
+    content: ""; position: absolute; inset: 0;
+    border-radius: inherit;
+    padding: 1.4px;
+    background: conic-gradient(from 200deg at 50% 50%,
+      rgba(255,255,255,0.65) 0deg,
+      rgba(180,200,255,0.28) 60deg,
+      rgba(255,255,255,0.08) 130deg,
+      rgba(255,220,200,0.28) 220deg,
+      rgba(255,255,255,0.7) 320deg,
+      rgba(255,255,255,0.65) 360deg);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+  }
+  /* specular highlight (top-left soft sheen) */
+  .br-corner::after{
+    content: ""; position: absolute; inset: 0;
+    border-radius: inherit;
+    background:
+      radial-gradient(60% 80% at 25% 0%, rgba(255,255,255,0.32) 0%, transparent 70%),
+      radial-gradient(40% 80% at 100% 100%, rgba(255,255,255,0.14) 0%, transparent 70%);
+    pointer-events: none;
+    mix-blend-mode: screen;
+    z-index: 1;
+  }
+  .br-corner > *{ position: relative; z-index: 2; }
+
+  /* hide the page-bg cutout masks (no longer needed for glass pill) */
+  .br-corner .mask-top, .br-corner .mask-left{ display: none; }
+
+  .br-circle{
+    width: 40px; height: 40px;
+    border-radius: 999px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.22);
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
+    color: rgba(255,255,255,0.95);
+    flex-shrink: 0;
+  }
+  @media (min-width: 768px){
+    .br-circle{ width: 48px; height: 48px; }
+  }
+  .br-circle svg{ width: 16px; height: 16px; }
+  @media (min-width: 768px){ .br-circle svg{ width: 22px; height: 22px; } }
+
+  .br-info{ display: flex; flex-direction: column; gap: 2px; }
+  .br-info .title{
+    font-size: 16px; font-weight: 400;
+    color: rgba(255,255,255,0.98);
+    text-shadow: 0 1px 2px rgba(10,10,15,0.35);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  @media (min-width: 768px){ .br-info .title{ font-size: 20px; } }
+  .br-link{
+    display: inline-flex; align-items: center; gap: 4px;
+    color: rgba(255,255,255,0.7);
+    text-shadow: 0 1px 2px rgba(10,10,15,0.3);
+    cursor: pointer;
+    transition: color .25s;
+  }
+  .br-link:hover{ color: rgba(255,255,255,0.95); }
+  .br-link span{ font-size: 12px; font-weight: 400; }
+  @media (min-width: 768px){ .br-link span{ font-size: 15px; } }
+  .br-link svg{ width: 14px; height: 14px; transition: transform .25s; }
+  .br-link:hover svg{ transform: translateX(2px); }
+
+  /* ----- Tweaks panel ----- */
+  .tw-panel{
+    position: fixed; bottom: 20px; right: 20px; z-index: 10000;
+    width: 280px;
+    background: #fff;
+    border: 1px solid rgba(30,50,90,0.15);
+    border-radius: 16px;
+    padding: 18px;
+    color: var(--ink);
+    font-family: var(--sans); font-size: 12px;
+    display: none;
+    box-shadow: 0 24px 60px rgba(30,50,90,.15);
+  }
+  .tw-panel.is-open{ display: block; }
+  .tw-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom: 14px;}
+  .tw-head h5{ margin:0; font-size:10px; letter-spacing:.24em; text-transform:uppercase; color:var(--ink); font-weight: 400;}
+  .tw-close{ font-size:20px; color:var(--ink); line-height:1; }
+  .tw-row{ display:flex; flex-direction:column; gap:6px; margin-bottom: 14px;}
+  .tw-row label{ font-size: 10px; letter-spacing:.18em; text-transform:uppercase; color: rgba(30,50,90,0.5);}
+  .tw-row textarea, .tw-row input[type=text]{
+    background: rgba(30,50,90,0.04); color: var(--ink);
+    border: 1px solid rgba(30,50,90,0.12);
+    border-radius: 8px; padding: 8px; font: 400 12px var(--sans); resize: vertical;
+  }
+  .tw-row .check{ display: flex; align-items: center; gap: 10px; font-size: 12px; }
+  .tw-seg{ display: flex; border: 1px solid rgba(30,50,90,0.12); border-radius: 8px; overflow: hidden; }
+  .tw-seg button{
+    flex: 1; padding: 7px 4px;
+    font-size: 9.5px; letter-spacing: .18em; text-transform: uppercase;
+    color: rgba(30,50,90,0.6);
+    border-right: 1px solid rgba(30,50,90,0.12);
+  }
+  .tw-seg button:last-child{ border-right: 0; }
+  .tw-seg button.is-on{ background: rgba(30,50,90,0.95); color: #fff; }
+
+  /* ============================================================ */
+  /* ====== Reusable Liquid Glass utility (iOS Clear style) ====== */
+  /* ============================================================ */
+  .glass-clear{
+    position: relative;
+    background: rgba(255,255,255,0.06);
+    -webkit-backdrop-filter: blur(10px) saturate(180%) brightness(1.08);
+    backdrop-filter: blur(10px) saturate(180%) brightness(1.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow:
+      0 24px 50px -10px rgba(10,10,15,0.45),
+      0 6px 16px -4px rgba(10,10,15,0.35),
+      inset 0 1.5px 0 0 rgba(255,255,255,0.55),
+      inset 0 -1.5px 1px 0 rgba(255,255,255,0.35),
+      inset 1.5px 0 1px -1px rgba(255,255,255,0.25),
+      inset -1.5px 0 1px -1px rgba(255,255,255,0.25),
+      inset 0 0 20px 0 rgba(255,255,255,0.06);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .glass-clear::before{
+    content: ""; position: absolute; inset: 0;
+    border-radius: inherit;
+    padding: 1.4px;
+    background: conic-gradient(from 200deg at 50% 50%,
+      rgba(255,255,255,0.65) 0deg,
+      rgba(180,200,255,0.28) 60deg,
+      rgba(255,255,255,0.08) 130deg,
+      rgba(255,220,200,0.28) 220deg,
+      rgba(255,255,255,0.7) 320deg,
+      rgba(255,255,255,0.65) 360deg);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .glass-clear::after{
+    content: ""; position: absolute; inset: 0;
+    border-radius: inherit;
+    background:
+      radial-gradient(60% 50% at 25% 0%, rgba(255,255,255,0.32) 0%, transparent 70%),
+      radial-gradient(40% 40% at 100% 100%, rgba(255,255,255,0.14) 0%, transparent 70%);
+    pointer-events: none;
+    mix-blend-mode: screen;
+    z-index: 1;
+  }
+  .glass-clear > *{ position: relative; z-index: 2; }
+
+  /* ============================================================ */
+  /* ====== Section-card shell (Products & Testimonials) ====== */
+  /* ============================================================ */
+  .section-wrap{
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+  }
+  @media (min-width: 768px){ .section-wrap{ padding: 20px; } }
+  .section-card{
+    position: relative;
+    width: 100%;
+    max-width: 1536px;
+    margin: 0 auto;
+    border-radius: 24px;
+    overflow: hidden;
+    isolation: isolate;
+    /* Frosted glass effect */
+    background:
+      linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 35%, rgba(10,20,40,0.18) 100%),
+      rgba(15,22,40,0.35);
+    -webkit-backdrop-filter: blur(28px) saturate(140%);
+    backdrop-filter: blur(28px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.18),
+      inset 0 -1px 0 rgba(255,255,255,0.04),
+      0 30px 80px -20px rgba(0,0,0,0.55);
+  }
+  @media (min-width: 768px){ .section-card{ border-radius: 48px; } }
+  /* Subtle inner highlight + readability tint */
+  .section-card::before{
+    content: "";
+    position: absolute; inset: 0; pointer-events: none; z-index: 1;
+    background:
+      radial-gradient(120% 80% at 0% 0%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 45%),
+      radial-gradient(120% 80% at 100% 100%, rgba(120,150,200,0.08) 0%, rgba(255,255,255,0) 50%);
+    mix-blend-mode: screen;
+  }
+  .section-card::after{
+    content: "";
+    position: absolute; inset: 0; pointer-events: none; z-index: 1;
+    background:
+      radial-gradient(70% 60% at 50% 35%, transparent 0%, rgba(10,10,15,0.18) 70%, rgba(10,10,15,0.32) 100%),
+      linear-gradient(180deg, rgba(10,10,15,.18) 0%, transparent 25%, transparent 65%, rgba(10,10,15,.22) 100%);
+  }
+  .section-content{
+    position: relative; z-index: 10;
+    padding: clamp(48px, 8vw, 120px) clamp(24px, 5vw, 80px);
+    color: var(--cream);
+  }
+
+  /* ----- Section header (shared) ----- */
+  .section-eyebrow{
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.08);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.18);
+    font-size: 10.5px; letter-spacing: 0.28em; text-transform: uppercase;
+    color: rgba(255,255,255,0.78);
+    margin-bottom: 24px;
+  }
+  .section-eyebrow .dot{
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--sky);
+    box-shadow: 0 0 12px var(--sky);
+  }
+  .section-h2{
+    font-family: var(--sans); font-weight: 400;
+    font-size: clamp(36px, 6vw, 72px);
+    line-height: 1.02; letter-spacing: -0.035em;
+    color: var(--cream);
+    margin: 0 0 12px; max-width: 800px;
+    text-wrap: balance;
+  }
+  .section-h2 .italic{
+    font-family: var(--serif); font-style: italic; font-weight: 400;
+    color: rgba(240,237,230,0.7);
+  }
+  .section-lede{
+    font-size: 15px; line-height: 1.65;
+    color: rgba(214,228,240,0.78);
+    max-width: 480px;
+    margin: 0;
+  }
+  .section-head{
+    display: grid; grid-template-columns: 1fr; gap: 24px;
+    align-items: end; justify-content: space-between;
+    margin-bottom: 64px;
+  }
+  @media (min-width: 880px){
+    .section-head{ grid-template-columns: 1.4fr 1fr; gap: 60px; }
+    .section-lede{ justify-self: end; text-align: right; }
+  }
+
+  /* ====== Products grid ====== */
+  .products-grid{
+    display: grid; grid-template-columns: 1fr; gap: 20px;
+  }
+  @media (min-width: 720px){ .products-grid{ grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+  .product-card{
+    border-radius: 24px;
+    padding: 14px;
+    display: flex; flex-direction: column; gap: 14px;
+    color: var(--cream);
+  }
+  .product-card .product-img{
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(10,10,15,0.4);
+  }
+  .product-card image-slot{
+    width: 100%; height: 100%;
+    --image-slot-border-color: rgba(255,255,255,0.12);
+    --image-slot-color: rgba(255,255,255,0.5);
+    --image-slot-bg: rgba(10,10,15,0.4);
+  }
+  .product-card .product-info{
+    padding: 4px 10px 8px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .product-card .tag{
+    font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(255,255,255,0.62);
+  }
+  .product-card h3{
+    font-family: var(--sans); font-weight: 400;
+    font-size: 22px; line-height: 1.1; letter-spacing: -0.02em;
+    margin: 0; color: var(--cream);
+    text-shadow: 0 1px 2px rgba(10,10,15,0.35);
+  }
+  .product-card h3 .italic{
+    font-family: var(--serif); font-style: italic; font-weight: 400;
+    color: rgba(240,237,230,0.72);
+  }
+  .product-card p{
+    margin: 0; font-size: 13px; line-height: 1.6;
+    color: rgba(214,228,240,0.72);
+  }
+  .product-row{
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 8px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+  .product-row .price{
+    font-size: 14px; color: var(--cream);
+    text-shadow: 0 1px 2px rgba(10,10,15,0.35);
+  }
+  .product-row .pbtn{
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.12);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.28);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+    color: #fff;
+    border-radius: 999px;
+    padding: 6px 6px 6px 14px;
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    transition: background .25s, transform .2s;
+  }
+  .product-row .pbtn:hover{ background: rgba(255,255,255,0.22); }
+  .product-row .pbtn:active{ transform: scale(0.97); }
+  .product-row .pbtn .ico{
+    width: 22px; height: 22px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.22);
+    border: 1px solid rgba(255,255,255,0.35);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .product-row .pbtn .ico svg{ width: 11px; height: 11px; }
+
+  /* ====== Testimonials ====== */
+  .featured-quote{
+    border-radius: 28px;
+    padding: clamp(28px, 4vw, 56px);
+    display: flex; flex-direction: column; gap: 20px;
+    text-align: left;
+    margin-bottom: 20px;
+    color: var(--cream);
+  }
+  .featured-quote .qmark{
+    width: 44px; height: 44px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.3);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.45);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #fff;
+  }
+  .featured-quote blockquote{
+    margin: 0;
+    font-family: var(--sans); font-weight: 400;
+    font-size: clamp(22px, 2.6vw, 34px);
+    line-height: 1.32; letter-spacing: -0.015em;
+    color: var(--cream);
+    text-wrap: balance;
+    text-shadow: 0 1px 2px rgba(10,10,15,0.35);
+  }
+  .featured-quote blockquote .italic{
+    font-family: var(--serif); font-style: italic; font-weight: 400;
+    color: rgba(240,237,230,0.78);
+  }
+  .featured-quote cite{
+    font-style: normal;
+    display: flex; align-items: center; gap: 14px;
+    margin-top: 6px;
+  }
+  .featured-quote cite .avatar{
+    width: 40px; height: 40px; border-radius: 999px;
+    background: linear-gradient(135deg, #5B8DB8 0%, #2A4360 100%);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff; font-size: 13px;
+    display: inline-flex; align-items: center; justify-content: center;
+    letter-spacing: 0.04em;
+  }
+  .featured-quote cite .who{ display: flex; flex-direction: column; }
+  .featured-quote cite .name{
+    font-size: 14px; color: var(--cream);
+    text-shadow: 0 1px 2px rgba(10,10,15,0.35);
+  }
+  .featured-quote cite .role{
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(214,228,240,0.62);
+  }
+  .testimonials-grid{
+    display: grid; grid-template-columns: 1fr; gap: 16px;
+  }
+  @media (min-width: 720px){ .testimonials-grid{ grid-template-columns: repeat(3, 1fr); gap: 16px; } }
+  .testimonial-card{
+    border-radius: 22px;
+    padding: 24px;
+    display: flex; flex-direction: column; gap: 16px;
+    color: var(--cream);
+    min-height: 240px;
+  }
+  .testimonial-card .stars{
+    display: inline-flex; gap: 4px;
+    color: rgba(255,255,255,0.85);
+  }
+  .testimonial-card .stars svg{ width: 14px; height: 14px; }
+  .testimonial-card blockquote{
+    margin: 0;
+    font-size: 14px; line-height: 1.6;
+    color: rgba(240,237,230,0.92);
+    text-shadow: 0 1px 2px rgba(10,10,15,0.35);
+    text-wrap: pretty;
+    flex: 1;
+  }
+  .testimonial-card cite{
+    font-style: normal;
+    display: flex; align-items: center; gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+  .testimonial-card cite .avatar{
+    width: 34px; height: 34px; border-radius: 999px;
+    background: linear-gradient(135deg, rgba(91,141,184,0.7) 0%, rgba(30,42,56,0.7) 100%);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff; font-size: 11px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .testimonial-card cite .who{ display: flex; flex-direction: column; }
+  .testimonial-card cite .name{
+    font-size: 13px; color: var(--cream);
+    text-shadow: 0 1px 2px rgba(10,10,15,0.35);
+  }
+  .testimonial-card cite .role{
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(214,228,240,0.62);
+    margin-top: 2px;
+  }
+
+  /* ============================================================ */
+  /* ====== N°.04 — The Ritual ====== */
+  /* ============================================================ */
+  .ritual-layout{
+    display: grid; grid-template-columns: 1fr; gap: 32px;
+    align-items: stretch;
+  }
+  @media (min-width: 880px){
+    .ritual-layout{ grid-template-columns: 1.05fr 1fr; gap: 56px; }
+  }
+  .ritual-steps{
+    display: flex; flex-direction: column;
+  }
+  .ritual-step{
+    display: grid; grid-template-columns: auto 1fr auto;
+    align-items: start;
+    gap: clamp(20px, 3vw, 36px);
+    padding: 28px 0;
+    border-top: 1px solid rgba(255,255,255,0.10);
+  }
+  .ritual-step:last-child{ border-bottom: 1px solid rgba(255,255,255,0.10); }
+  .ritual-step .num{
+    font-family: var(--serif); font-style: italic; font-weight: 400;
+    font-size: clamp(40px, 5vw, 60px);
+    line-height: 1; color: rgba(240,237,230,0.9);
+    text-shadow: 0 1px 2px rgba(10,10,15,0.35);
+    width: 1.4ch;
+  }
+  .ritual-step .body h4{
+    font-family: var(--sans); font-weight: 400;
+    font-size: clamp(20px, 2vw, 24px); line-height: 1.15; letter-spacing: -0.02em;
+    margin: 6px 0 8px; color: var(--cream);
+    text-shadow: 0 1px 2px rgba(10,10,15,0.35);
+  }
+  .ritual-step .body p{
+    margin: 0; font-size: 13.5px; line-height: 1.65;
+    color: rgba(214,228,240,0.74);
+    max-width: 46ch;
+  }
+  .ritual-step .meta{
+    font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(214,228,240,0.5);
+    padding-top: 14px;
+    white-space: nowrap;
+  }
+  .ritual-aside{
+    border-radius: 24px;
+    padding: 18px;
+    display: flex; flex-direction: column; gap: 18px;
+    color: var(--cream);
+  }
+  .ritual-aside .ritual-img{
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(10,10,15,0.4);
+  }
+  .ritual-aside image-slot{
+    width: 100%; height: 100%;
+    --image-slot-border-color: rgba(255,255,255,0.12);
+    --image-slot-color: rgba(255,255,255,0.5);
+    --image-slot-bg: rgba(10,10,15,0.4);
+  }
+  .ritual-aside .ritual-caption{
+    padding: 4px 12px 12px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .ritual-aside .ritual-caption .tag{
+    font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(255,255,255,0.62);
+  }
+  .ritual-aside .ritual-caption p{
+    margin: 0;
+    font-family: var(--serif); font-style: italic; font-weight: 400;
+    font-size: clamp(16px, 1.6vw, 20px); line-height: 1.45;
+    color: rgba(240,237,230,0.88);
+    text-shadow: 0 1px 2px rgba(10,10,15,0.35);
+    text-wrap: pretty;
+  }
+
+  /* ============================================================ */
+  /* ====== N°.05 — Field Notes (Journal) ====== */
+  /* ============================================================ */
+  .journal-grid{
+    display: grid; grid-template-columns: 1fr; gap: 18px;
+  }
+  @media (min-width: 720px){ .journal-grid{ grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+  .journal-card{
+    border-radius: 22px;
+    padding: 24px;
+    display: flex; flex-direction: column; gap: 18px;
+    color: var(--cream);
+    min-height: 280px;
+    transition: transform .35s ease;
+  }
+  .journal-card:hover{ transform: translateY(-3px); }
+  .journal-card .meta-row{
+    display: flex; align-items: center; gap: 10px;
+    font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(214,228,240,0.58);
+  }
+  .journal-card .meta-row .sep{
+    width: 18px; height: 1px; background: rgba(255,255,255,0.22);
+  }
+  .journal-card h3{
+    font-family: var(--sans); font-weight: 400;
+    font-size: clamp(20px, 2vw, 24px); line-height: 1.18; letter-spacing: -0.02em;
+    margin: 0; color: var(--cream);
+    text-shadow: 0 1px 2px rgba(10,10,15,0.35);
+    text-wrap: balance;
+  }
+  .journal-card h3 .italic{
+    font-family: var(--serif); font-style: italic; font-weight: 400;
+    color: rgba(240,237,230,0.78);
+  }
+  .journal-card p{
+    margin: 0; font-size: 13.5px; line-height: 1.65;
+    color: rgba(214,228,240,0.74);
+    text-wrap: pretty;
+    flex: 1;
+  }
+  .journal-card .read-link{
+    display: inline-flex; align-items: center; gap: 8px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(240,237,230,0.86);
+  }
+  .journal-card .read-link svg{ width: 12px; height: 12px; }
+
+  /* ============================================================ */
+  /* ====== N°.06 — The Letter (Newsletter + close) ====== */
+  /* ============================================================ */
+  .letter-layout{
+    display: grid; grid-template-columns: 1fr; gap: 40px;
+    align-items: center;
+  }
+  @media (min-width: 880px){
+    .letter-layout{ grid-template-columns: 1.1fr 1fr; gap: 64px; }
+  }
+  .letter-left h2{
+    font-family: var(--sans); font-weight: 400;
+    font-size: clamp(40px, 6.5vw, 84px);
+    line-height: 1.0; letter-spacing: -0.04em;
+    color: var(--cream);
+    margin: 0 0 20px; max-width: 14ch;
+    text-wrap: balance;
+  }
+  .letter-left h2 .italic{
+    font-family: var(--serif); font-style: italic; font-weight: 400;
+    color: rgba(240,237,230,0.7);
+  }
+  .letter-left p{
+    margin: 0; font-size: 15px; line-height: 1.65;
+    color: rgba(214,228,240,0.78);
+    max-width: 44ch;
+  }
+  .letter-form-wrap{
+    border-radius: 28px;
+    padding: clamp(24px, 3vw, 36px);
+    color: var(--cream);
+  }
+  .letter-form-wrap .label{
+    font-size: 10.5px; letter-spacing: 0.28em; text-transform: uppercase;
+    color: rgba(214,228,240,0.62);
+    margin-bottom: 12px;
+  }
+  .letter-form{
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(10,10,15,0.32);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 999px;
+    padding: 6px 6px 6px 20px;
+    margin-bottom: 18px;
+  }
+  .letter-form input{
+    flex: 1;
+    background: transparent; border: 0; outline: 0;
+    font: inherit; color: var(--cream);
+    font-size: 14px;
+    padding: 12px 0;
+  }
+  .letter-form input::placeholder{ color: rgba(214,228,240,0.45); }
+  .letter-form .submit{
+    display: inline-flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.14);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.32);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+    color: #fff;
+    border-radius: 999px;
+    padding: 10px 8px 10px 18px;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    transition: background .25s, transform .2s;
+  }
+  .letter-form .submit:hover{ background: rgba(255,255,255,0.22); }
+  .letter-form .submit:active{ transform: scale(0.97); }
+  .letter-form .submit .ico{
+    width: 22px; height: 22px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.22);
+    border: 1px solid rgba(255,255,255,0.35);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .letter-form .submit .ico svg{ width: 11px; height: 11px; }
+  .letter-fine{
+    display: flex; align-items: center; gap: 14px;
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: rgba(214,228,240,0.5);
+  }
+  .letter-fine .pulse{
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--sky);
+    box-shadow: 0 0 12px var(--sky);
+    flex-shrink: 0;
+  }
+
+  /* Footer row inside the same letter section */
+  .letter-foot{
+    margin-top: clamp(48px, 6vw, 88px);
+    padding-top: 28px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    display: grid; grid-template-columns: 1fr; gap: 20px;
+    align-items: center;
+  }
+  @media (min-width: 720px){
+    .letter-foot{ grid-template-columns: auto 1fr auto; gap: 32px; }
+  }
+  .letter-foot .wordmark{
+    font-family: var(--sans); font-weight: 400;
+    font-size: 18px; letter-spacing: 0.32em;
+    color: var(--cream);
+  }
+  .letter-foot .foot-links{
+    display: flex; flex-wrap: wrap; gap: 22px;
+    justify-self: start;
+  }
+  @media (min-width: 720px){ .letter-foot .foot-links{ justify-self: center; } }
+  .letter-foot .foot-links a{
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: rgba(214,228,240,0.6);
+    transition: color .2s;
+  }
+  .letter-foot .foot-links a:hover{ color: var(--cream); }
+  .letter-foot .copyright{
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(214,228,240,0.4);
+  }
+</style>
+</head>
+<body>
+
+<!-- Shared fixed background video for the whole page -->
+<video class="page-bg-video" autoplay muted loop playsinline preload="auto">
+  <source src="assets/aethon-hero.mp4" type="video/mp4" />
+</video>
+<div class="page-bg-tint" aria-hidden="true"></div>
+
+<main class="stage" data-screen-label="01 Hero">
+  <div class="hero-wrap">
+
+    <section class="hero-card">
+
+      <!-- Content layer -->
+      <div class="content-layer">
+
+        <!-- Navbar -->
+        <nav class="bar">
+          <div class="nav-spacer"></div>
+          <ul class="menu">
+            <li>Objects</li>
+            <li>
+              Library
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </li>
+            <li>Journal</li>
+            <li>
+              Philosophy
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </li>
+          </ul>
+          <div class="mobile-logo"><span>AETHON</span></div>
+          <div class="nav-right">
+            <button class="btn-cta clear-glass">
+              <span class="icon-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+              </span>
+              <span class="label">Begin the ritual</span>
+            </button>
+          </div>
+        </nav>
+
+        <!-- Hero text -->
+        <div class="hero-text">
+          <!-- Hero badge -->
+          <div class="hero-badge clear-glass">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
+            <span>Mindful Objects · N°.001</span>
+          </div>
+
+          <h1 class="hero-h1" id="heroHeadline">Read the universe. <span class="italic">One page at a time.</span></h1>
+
+          <p class="hero-sub" id="heroSub">Aethon adalah ruang sunyi untuk pikiran yang haus akan cahaya — jurnal, lilin, dan teh untuk menemani jam-jam paling tenang dalam satu hari.</p>
+        </div>
+
+        <!-- Bottom-left glass stat card -->
+        <div class="bl-card" data-comment-anchor="0c1c2ed88d-div">
+          <div>
+            <div class="bl-stat-num" id="statNum">4.2K</div>
+            <div class="bl-stat-label">Quiet thinkers</div>
+          </div>
+          <button class="bl-btn clear-glass">
+            <span class="ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+            </span>
+            <span class="lbl">Read letters</span>
+          </button>
+        </div>
+
+        <!-- Bottom-right corner cutout -->
+        <div class="br-corner">
+          <!-- Top intersection mask -->
+          <div class="mask-top">
+            <svg width="100%" height="100%" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M56 56V0C56 30.9279 30.9279 56 0 56H56Z" fill="#f0f0f0"/>
+            </svg>
+          </div>
+          <!-- Left intersection mask -->
+          <div class="mask-left">
+            <svg width="100%" height="100%" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M56 56H0C30.9279 56 56 30.9279 56 0V56Z" fill="#f0f0f0"/>
+            </svg>
+          </div>
+
+          <div class="br-circle clear-glass">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+          </div>
+          <div class="br-info">
+            <span class="title">The Journal</span>
+            <a class="br-link">
+              <span>Essays &amp; field notes</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ============ PRODUCTS SECTION ============ -->
+  <section class="section-wrap" data-screen-label="02 Library">
+    <div class="section-card">
+      <div class="section-content" data-comment-anchor="a1d5e1fef2-div">
+        <header class="section-head">
+          <div>
+            <div class="section-eyebrow"><span class="dot"></span> N°.02 — The Library</div>
+            <h2 class="section-h2">Objects for <span class="italic">slow thinking.</span></h2>
+          </div>
+          <p class="section-lede">Tiga objek harian yang dirancang untuk menemani jam-jam paling tenang — saat dunia tidur dan pikiranmu akhirnya bisa bicara.</p>
+        </header>
+
+        <div class="products-grid">
+          <article class="product-card glass-clear">
+            <div class="product-img">
+              <image-slot id="product-journal" placeholder="Foto The Midnight Journal"></image-slot>
+            </div>
+            <div class="product-info">
+              <span class="tag">N°.01 / Journal</span>
+              <h3>The Midnight <span class="italic">Journal.</span></h3>
+              <p>Hardcover linen hitam, 240 halaman dotted cream paper. Untuk ide yang hanya lahir setelah pukul sebelas malam.</p>
+              <div class="product-row">
+                <span class="price">IDR 480.000</span>
+                <button class="pbtn">
+                  Add
+                  <span class="ico"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h8M7 2l4 4-4 4"/></svg></span>
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card glass-clear">
+            <div class="product-img">
+              <image-slot id="product-candle" placeholder="Foto Scent of Thinking candle"></image-slot>
+            </div>
+            <div class="product-info">
+              <span class="tag">N°.02 / Candle</span>
+              <h3>Scent of <span class="italic">Thinking.</span></h3>
+              <p>Cedar, vanilla, dan petrichor. Lilin 220g yang dirancang untuk menemani tiga jam membaca di kursi yang sama.</p>
+              <div class="product-row">
+                <span class="price">IDR 320.000</span>
+                <button class="pbtn">
+                  Add
+                  <span class="ico"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h8M7 2l4 4-4 4"/></svg></span>
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card glass-clear">
+            <div class="product-img">
+              <image-slot id="product-tea" placeholder="Foto Solitude Blend herbal tea"></image-slot>
+            </div>
+            <div class="product-info">
+              <span class="tag">N°.03 / Tea</span>
+              <h3>Solitude <span class="italic">Blend.</span></h3>
+              <p>Chamomile, lavender, dan rooibos. Blend teh herbal untuk pagi-pagi yang dimulai sebelum dunia memintamu menjadi sibuk.</p>
+              <div class="product-row">
+                <span class="price">IDR 180.000</span>
+                <button class="pbtn">
+                  Add
+                  <span class="ico"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h8M7 2l4 4-4 4"/></svg></span>
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TESTIMONIALS SECTION ============ -->
+  <section class="section-wrap" data-screen-label="03 Quiet Words">
+    <div class="section-card">
+      <div class="section-content">
+        <header class="section-head">
+          <div>
+            <div class="section-eyebrow"><span class="dot"></span> N°.03 — Quiet Words</div>
+            <h2 class="section-h2">From those who <span class="italic">listen.</span></h2>
+          </div>
+          <p class="section-lede">Catatan dari empat ribu lebih pembaca tenang yang menjadikan Aethon bagian dari ritual harian mereka.</p>
+        </header>
+
+        <div class="featured-quote glass-clear">
+          <div class="qmark">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.17 17.17 9.41 13H5.5C4.67 13 4 12.33 4 11.5v-5C4 5.67 4.67 5 5.5 5h5C11.33 5 12 5.67 12 6.5v5l-3.59 6.67-1.24-1zm10 0L19.41 13H15.5c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5v5l-3.59 6.67-1.24-1z"/></svg>
+          </div>
+          <blockquote>“Aethon mengajarkan saya bahwa <span class="italic">kemewahan</span> sesungguhnya bukan barang mahal — tapi tiga puluh menit di pagi hari untuk membaca, menyeduh teh, dan tidak menjawab siapa-siapa.”</blockquote>
+          <cite>
+            <span class="avatar">AR</span>
+            <span class="who">
+              <span class="name">Ayu Rachmadhani</span>
+              <span class="role">Novelist · Yogyakarta</span>
+            </span>
+          </cite>
+        </div>
+
+        <div class="testimonials-grid">
+          <article class="testimonial-card glass-clear">
+            <div class="stars" aria-label="5 stars">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg>
+            </div>
+            <blockquote>The Midnight Journal jadi tempat saya menampung semua pikiran yang tidak muat di meeting. Paper-nya halus, cover-nya kuat — sudah dibawa ke mana-mana.</blockquote>
+            <cite>
+              <span class="avatar">DP</span>
+              <span class="who">
+                <span class="name">Damar Pradipta</span>
+                <span class="role">Product Designer</span>
+              </span>
+            </cite>
+          </article>
+
+          <article class="testimonial-card glass-clear">
+            <div class="stars" aria-label="5 stars">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg>
+            </div>
+            <blockquote>Scent of Thinking sudah jadi penanda waktu di rumah. Begitu lilinnya menyala, anak-anak tahu — ibu sedang membaca, jangan diganggu.</blockquote>
+            <cite>
+              <span class="avatar">SL</span>
+              <span class="who">
+                <span class="name">Sekar Larasati</span>
+                <span class="role">Editor · Jakarta</span>
+              </span>
+            </cite>
+          </article>
+
+          <article class="testimonial-card glass-clear">
+            <div class="stars" aria-label="5 stars">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.56 5.82 22 7 14.14 2 9.27l6.91-1.01z"/></svg>
+            </div>
+            <blockquote>Saya bukan peminum teh. Tapi Solitude Blend mengubah pagi-pagi saya. Lima menit menunggu seduhannya saja sudah jadi meditasi.</blockquote>
+            <cite>
+              <span class="avatar">RH</span>
+              <span class="who">
+                <span class="name">Reza Hadiwijaya</span>
+                <span class="role">Photographer · Bali</span>
+              </span>
+            </cite>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ N°.04 — THE RITUAL ============ -->
+  <section class="section-wrap" data-screen-label="04 The Ritual">
+    <div class="section-card">
+      <div class="section-content">
+        <header class="section-head">
+          <div>
+            <div class="section-eyebrow"><span class="dot"></span> N°.04 — The Ritual</div>
+            <h2 class="section-h2">Three quiet acts, <span class="italic">repeated.</span></h2>
+          </div>
+          <p class="section-lede">Sebuah ritual sederhana yang dirancang untuk mengembalikan pikiran kepada dirinya sendiri — sebelum dunia mulai meminta.</p>
+        </header>
+
+        <div class="ritual-layout">
+          <div class="ritual-steps">
+            <div class="ritual-step">
+              <div class="num">i.</div>
+              <div class="body">
+                <h4>Nyalakan lilin.</h4>
+                <p>Tarik napas tiga kali. Biarkan aroma cedar dan vanilla mengisi ruang sebelum apa pun lainnya dimulai. Ritual dimulai bukan dari kata, tapi dari bau.</p>
+              </div>
+              <div class="meta">02 min</div>
+            </div>
+            <div class="ritual-step">
+              <div class="num">ii.</div>
+              <div class="body">
+                <h4>Seduh teh.</h4>
+                <p>Air panas, bunga chamomile, dan empat menit menunggu — sama lamanya dengan satu lagu yang lambat. Lima menit yang akan memperlambat seluruh hari.</p>
+              </div>
+              <div class="meta">05 min</div>
+            </div>
+            <div class="ritual-step">
+              <div class="num">iii.</div>
+              <div class="body">
+                <h4>Buka halaman pertama.</h4>
+                <p>Tulis tiga kalimat. Tidak harus indah, tidak harus benar. Hanya tiga kalimat yang jujur — selebihnya akan datang sendiri.</p>
+              </div>
+              <div class="meta">15 min</div>
+            </div>
+          </div>
+
+          <aside class="ritual-aside glass-clear">
+            <div class="ritual-img">
+              <image-slot id="ritual-photo" placeholder="Foto ritual pagi — meja, lilin, jurnal"></image-slot>
+            </div>
+            <div class="ritual-caption">
+              <span class="tag">Field photograph · N°.07</span>
+              <p>“Pagi ini saya hanya melakukan tiga hal. Dan untuk pertama kalinya dalam minggu ini, saya merasa hadir.”</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ N°.05 — FIELD NOTES ============ -->
+  <section class="section-wrap" data-screen-label="05 Field Notes">
+    <div class="section-card">
+      <div class="section-content">
+        <header class="section-head">
+          <div>
+            <div class="section-eyebrow"><span class="dot"></span> N°.05 — Field Notes</div>
+            <h2 class="section-h2">Letters from the <span class="italic">quiet hours.</span></h2>
+          </div>
+          <p class="section-lede">Tulisan-tulisan pendek dari tim Aethon dan pembaca tenang lainnya — esai, catatan lapangan, dan setengah-pikiran yang belum tuntas.</p>
+        </header>
+
+        <div class="journal-grid">
+          <article class="journal-card glass-clear">
+            <div class="meta-row">
+              <span>14 Mar 2026</span>
+              <span class="sep"></span>
+              <span>06 min</span>
+            </div>
+            <h3>On the architecture of <span class="italic">slow mornings.</span></h3>
+            <p>Mengapa tiga puluh menit pertama di hari kita layak diperlakukan sebagai ritual, bukan transit menuju produktivitas.</p>
+            <a class="read-link">
+              <span>Read essay</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+            </a>
+          </article>
+
+          <article class="journal-card glass-clear">
+            <div class="meta-row">
+              <span>02 Mar 2026</span>
+              <span class="sep"></span>
+              <span>04 min</span>
+            </div>
+            <h3>Why we still write on <span class="italic">paper.</span></h3>
+            <p>Catatan dari seorang penulis yang kembali ke pulpen setelah dua belas tahun mengetik — dan apa yang ia temukan di sana.</p>
+            <a class="read-link">
+              <span>Read essay</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+            </a>
+          </article>
+
+          <article class="journal-card glass-clear">
+            <div class="meta-row">
+              <span>21 Feb 2026</span>
+              <span class="sep"></span>
+              <span>08 min</span>
+            </div>
+            <h3>The grammar of <span class="italic">scent.</span></h3>
+            <p>Wawancara dengan perfumer di balik <em>Scent of Thinking</em> — tentang cedar, hujan, dan ingatan yang hanya bisa diakses lewat hidung.</p>
+            <a class="read-link">
+              <span>Read essay</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h10v10"/><path d="M7 17 17 7"/></svg>
+            </a>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ N°.06 — THE LETTER ============ -->
+  <section class="section-wrap" data-screen-label="06 The Letter">
+    <div class="section-card">
+      <div class="section-content">
+        <div class="section-eyebrow"><span class="dot"></span> N°.06 — The Letter</div>
+
+        <div class="letter-layout">
+          <div class="letter-left">
+            <h2>One letter, <span class="italic">every Sunday.</span></h2>
+            <p>Sebuah surat pendek setiap pekan — satu esai, satu kutipan, satu rekomendasi. Tanpa promosi, tanpa banner, tanpa permintaan. Hanya sesuatu untuk dibaca pelan-pelan dengan secangkir teh.</p>
+          </div>
+
+          <div class="letter-form-wrap glass-clear">
+            <div class="label">Subscribe — gratis selamanya</div>
+            <form class="letter-form" onsubmit="event.preventDefault();">
+              <input type="email" placeholder="alamat@email.kamu" aria-label="Email" />
+              <button type="submit" class="submit">
+                <span>Send me letters</span>
+                <span class="ico">
+                  <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h8M7 2l4 4-4 4"/></svg>
+                </span>
+              </button>
+            </form>
+            <div class="letter-fine">
+              <span class="pulse"></span>
+              <span>4.218 quiet readers · No spam · Unsubscribe kapan saja</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="letter-foot">
+          <div class="wordmark">AETHON</div>
+          <nav class="foot-links">
+            <a>Objects</a>
+            <a>Journal</a>
+            <a>Philosophy</a>
+            <a>Contact</a>
+            <a>Instagram</a>
+          </nav>
+          <div class="copyright">© 2026 — Made slowly in Yogyakarta</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Image-slot web component (drag-and-drop product photos) -->
+<script src="assets/image-slot.js"></script>
+
+<!-- ============ Tweaks ============ -->
+<script>
+  window.__AETHON_TWEAKS = /*EDITMODE-BEGIN*/{
+    "heroHeadline": "Read the universe.",
+    "heroItalic": "One page at a time.",
+    "heroSub": "Aethon adalah ruang sunyi untuk pikiran yang haus akan cahaya — jurnal, lilin, dan teh untuk menemani jam-jam paling tenang dalam satu hari.",
+    "stat": "4.2K",
+    "statLabel": "Quiet thinkers",
+    "darkness": "moody"
+  }/*EDITMODE-END*/;
+</script>
+
+<div class="tw-panel" id="twPanel">
+  <div class="tw-head">
+    <h5>Tweaks</h5>
+    <button class="tw-close" id="twClose" aria-label="Close">×</button>
+  </div>
+
+  <div class="tw-row">
+    <label>Headline (line 1)</label>
+    <input type="text" id="twHead" />
+  </div>
+  <div class="tw-row">
+    <label>Headline (italic line 2)</label>
+    <input type="text" id="twItalic" />
+  </div>
+  <div class="tw-row">
+    <label>Subheadline</label>
+    <textarea id="twSub" rows="3"></textarea>
+  </div>
+  <div class="tw-row">
+    <label>Stat number</label>
+    <input type="text" id="twStat" />
+  </div>
+  <div class="tw-row">
+    <label>Video overlay</label>
+    <div class="tw-seg" data-key="darkness">
+      <button data-val="light">Light</button>
+      <button data-val="moody">Moody</button>
+      <button data-val="deep">Deep</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const t = window.__AETHON_TWEAKS;
+
+  function applyHeadline(){
+    const h = document.getElementById('heroHeadline');
+    h.innerHTML = escapeHtml(t.heroHeadline) + ' <span class="italic">' + escapeHtml(t.heroItalic) + '</span>';
+  }
+  function applySub(){
+    document.getElementById('heroSub').textContent = t.heroSub;
+  }
+  function applyStat(){
+    document.getElementById('statNum').textContent = t.stat;
+  }
+  function applyDarkness(){
+    const card = document.querySelector('.hero-card');
+    card.dataset.darkness = t.darkness;
+    const styles = {
+      light: 'radial-gradient(70% 60% at 50% 35%, transparent 0%, rgba(10,10,15,0.1) 70%, rgba(10,10,15,0.35) 100%), linear-gradient(180deg, rgba(10,10,15,.15) 0%, transparent 25%, transparent 65%, rgba(10,10,15,.25) 100%)',
+      moody: 'radial-gradient(70% 60% at 50% 35%, transparent 0%, rgba(10,10,15,0.25) 70%, rgba(10,10,15,0.65) 100%), linear-gradient(180deg, rgba(10,10,15,.35) 0%, transparent 25%, transparent 65%, rgba(10,10,15,.4) 100%)',
+      deep:  'radial-gradient(70% 60% at 50% 35%, rgba(10,10,15,0.1) 0%, rgba(10,10,15,0.5) 70%, rgba(10,10,15,0.85) 100%), linear-gradient(180deg, rgba(10,10,15,.55) 0%, transparent 25%, transparent 55%, rgba(10,10,15,.6) 100%)'
+    };
+    // inject as style override on ::after via a runtime stylesheet
+    let s = document.getElementById('__darkness_style');
+    if(!s){ s = document.createElement('style'); s.id = '__darkness_style'; document.head.appendChild(s); }
+    s.textContent = '.hero-card::after{ background: ' + styles[t.darkness] + ' !important; }';
+  }
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  }
+
+  applyHeadline(); applySub(); applyStat(); applyDarkness();
+
+  /* Tweaks panel host protocol */
+  const panel = document.getElementById('twPanel');
+  function persist(edits){
+    Object.assign(t, edits);
+    try{ window.parent.postMessage({type:'__edit_mode_set_keys', edits}, '*'); }catch(e){}
+  }
+  window.addEventListener('message', (e)=>{
+    if(!e.data || typeof e.data !== 'object') return;
+    if(e.data.type === '__activate_edit_mode'){ panel.classList.add('is-open'); }
+    if(e.data.type === '__deactivate_edit_mode'){ panel.classList.remove('is-open'); }
+  });
+  try{ window.parent.postMessage({type:'__edit_mode_available'}, '*'); }catch(e){}
+  document.getElementById('twClose').addEventListener('click', ()=>{
+    panel.classList.remove('is-open');
+    try{ window.parent.postMessage({type:'__edit_mode_dismissed'}, '*'); }catch(e){}
+  });
+
+  // Bind controls
+  const bind = (id, key, apply)=>{
+    const el = document.getElementById(id);
+    el.value = t[key];
+    el.addEventListener('input', ()=>{
+      persist({[key]: el.value});
+      apply();
+    });
+  };
+  bind('twHead', 'heroHeadline', applyHeadline);
+  bind('twItalic', 'heroItalic', applyHeadline);
+  bind('twSub', 'heroSub', applySub);
+  bind('twStat', 'stat', applyStat);
+
+  // Segmented (darkness)
+  document.querySelectorAll('.tw-seg').forEach(seg=>{
+    const key = seg.dataset.key;
+    function paint(v){ seg.querySelectorAll('button').forEach(b=> b.classList.toggle('is-on', b.dataset.val===String(v))); }
+    paint(t[key]);
+    seg.querySelectorAll('button').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const v = b.dataset.val;
+        paint(v);
+        persist({[key]: v});
+        if(key==='darkness') applyDarkness();
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,964 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AETHON — For those who think in the dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script>
+/* Tweaks defaults — host parses & rewrites this JSON block on persist */
+window.__AETHON_TWEAKS = /*EDITMODE-BEGIN*/{
+  "mood": "midnight",
+  "fontPairing": "fraunces-geist",
+  "heroHeadline": "Read the universe.\nOne page at a time.",
+  "carouselSpeed": 7,
+  "showGrain": true
+}/*EDITMODE-END*/;
+</script>
+
+<style>
+  :root{
+    --midnight:#0A0A0F;
+    --slate:#1E2A38;
+    --slate-2:#15202B;
+    --sky:#5B8DB8;
+    --cloud:#D6E4F0;
+    --cream:#F0EDE6;
+    --line: color-mix(in oklab, var(--cloud) 18%, transparent);
+    --line-strong: color-mix(in oklab, var(--cloud) 35%, transparent);
+
+    --serif: "Fraunces", "Tiempos", "GT Sectra", Georgia, serif;
+    --sans: "Geist", "Söhne", "Neue Haas Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono: "Geist Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  [data-mood="ivory"]{
+    --midnight:#F0EDE6; --slate:#E2DDD2; --slate-2:#D6CFC1;
+    --sky:#3A5F7E; --cloud:#1E2A38; --cream:#0A0A0F;
+    --line: color-mix(in oklab, var(--cloud) 22%, transparent);
+    --line-strong: color-mix(in oklab, var(--cloud) 40%, transparent);
+  }
+  [data-mood="slate"]{
+    --midnight:#15202B; --slate:#23323F; --slate-2:#1A2630;
+    --sky:#8AA9C3; --cloud:#DCE5EE; --cream:#F4F1EA;
+  }
+  [data-font="newsreader-manrope"]{
+    --serif: "Newsreader", Georgia, serif;
+    --sans: "Manrope", "Helvetica Neue", Arial, sans-serif;
+  }
+  [data-font="instrument-mono"]{
+    --serif: "Instrument Serif", Georgia, serif;
+    --sans: "Geist Mono", ui-monospace, monospace;
+  }
+
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  html{background:var(--midnight); color:var(--cloud);}
+  body{
+    font-family:var(--sans);
+    font-weight:400;
+    font-size:16px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    background:var(--midnight);
+    color:var(--cloud);
+    overflow-x:hidden;
+  }
+  ::selection{ background:var(--sky); color:var(--midnight);}
+
+  img,video,svg{display:block;max-width:100%}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+  /* ---------- Grain texture ---------- */
+  body[data-grain="true"]::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:9999;
+    opacity:.06; mix-blend-mode:overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* ---------- Shared shell ---------- */
+  .shell{ max-width: 1360px; margin:0 auto; padding: 0 32px; }
+  @media (max-width: 720px){ .shell{ padding:0 20px; } }
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color: color-mix(in oklab, var(--cloud) 60%, transparent);
+  }
+
+  .serif{ font-family:var(--serif); font-weight:300; letter-spacing:-0.02em;}
+  .display{
+    font-family:var(--serif);
+    font-weight:300;
+    font-variation-settings: "opsz" 144, "SOFT" 30;
+    letter-spacing:-0.035em;
+    line-height:0.95;
+    color:var(--cream);
+  }
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:absolute; inset:0 0 auto 0; z-index:20;
+    padding: 26px 40px;
+    display:flex; align-items:center; justify-content:space-between;
+    color:var(--cream);
+  }
+  .brand{
+    display:flex; align-items:center; gap:12px;
+    font-family:var(--serif); font-weight:300; font-size:22px;
+    letter-spacing:.28em;
+  }
+  .brand .mark{
+    width:26px; height:26px; border:1px solid var(--cream);
+    border-radius:50%; position:relative;
+  }
+  .brand .mark::after{
+    content:""; position:absolute; inset:5px; border-radius:50%;
+    background: radial-gradient(circle at 30% 30%, var(--cream), transparent 65%);
+    opacity:.9;
+  }
+  .nav-links{ display:flex; gap:36px; font-size:13.5px; letter-spacing:.02em;}
+  .nav-links a{ color: color-mix(in oklab, var(--cream) 75%, transparent); transition:color .25s;}
+  .nav-links a:hover{ color:var(--cream); }
+  .nav-cta{
+    border:1px solid color-mix(in oklab, var(--cream) 55%, transparent);
+    padding: 10px 22px; border-radius: 999px; font-size: 13px;
+    letter-spacing:.08em; text-transform:uppercase;
+    transition: background .3s, color .3s, border-color .3s;
+  }
+  .nav-cta:hover{ background:var(--cream); color:var(--midnight); border-color:var(--cream);}
+  @media (max-width: 880px){ .nav-links{ display:none;} .nav{ padding:22px 24px;} }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height: 100vh;
+    background: var(--midnight);
+    padding: 96px 24px 24px;
+    display:flex; flex-direction:column;
+  }
+  .hero-card{
+    position:relative; flex:1;
+    border-radius: 18px;
+    overflow:hidden;
+    background:#000;
+    isolation:isolate;
+  }
+  .hero-card video{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    z-index:0;
+  }
+  .hero-card::after{
+    content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+    background:
+      radial-gradient(80% 60% at 30% 35%, transparent 0%, rgba(10,10,15,.35) 70%, rgba(10,10,15,.78) 100%),
+      linear-gradient(180deg, rgba(10,10,15,.45) 0%, transparent 30%, transparent 60%, rgba(10,10,15,.6) 100%);
+  }
+  .hero-content{
+    position:relative; z-index:2; height:100%;
+    display:flex; flex-direction:column; justify-content:space-between;
+    padding: clamp(28px, 4.5vw, 64px);
+    color:var(--cream);
+  }
+  .hero-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:24px;}
+  .hero-top .eyebrow{ color: color-mix(in oklab, var(--cream) 70%, transparent);}
+  .hero-meta{
+    font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+    color:color-mix(in oklab, var(--cream) 55%, transparent);
+    text-align:right;
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .hero-bottom{ max-width: 920px; }
+  .hero-h1{
+    font-size: clamp(48px, 8.2vw, 132px);
+    margin: 0 0 28px;
+    white-space: pre-line;
+  }
+  .hero-row{ display:flex; align-items:flex-end; justify-content:space-between; gap:32px; flex-wrap:wrap; }
+  .hero-sub{
+    max-width: 360px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: color-mix(in oklab, var(--cream) 75%, transparent);
+  }
+  .ghost-cta{
+    display:inline-flex; align-items:center; gap:14px;
+    padding: 14px 26px;
+    border-radius: 999px;
+    border: 1px solid color-mix(in oklab, var(--cream) 50%, transparent);
+    color:var(--cream);
+    font-size: 13px; letter-spacing:.18em; text-transform:uppercase;
+    transition: background .35s, color .35s, border-color .35s, transform .4s;
+  }
+  .ghost-cta .arrow{
+    width: 28px; height:28px; border-radius:50%;
+    border:1px solid color-mix(in oklab, var(--cream) 50%, transparent);
+    display:grid; place-items:center;
+    transition: background .35s, border-color .35s, transform .4s;
+  }
+  .ghost-cta:hover{ background:var(--cream); color:var(--midnight); border-color:var(--cream);}
+  .ghost-cta:hover .arrow{ background:var(--midnight); border-color:var(--midnight); color:var(--cream);}
+  .ghost-cta:hover .arrow svg{ transform: translateX(2px); }
+  .ghost-cta .arrow svg{ width:12px; height:12px; transition: transform .3s;}
+
+  /* ---------- Section utility ---------- */
+  section.band{ padding: clamp(80px, 12vw, 160px) 0; position:relative;}
+  .band-midnight{ background:var(--midnight); color:var(--cloud);}
+  .band-slate{ background:var(--slate-2); color:var(--cloud);}
+  .band-sky{ background:var(--sky); color:var(--midnight);}
+
+  .section-eyebrow{
+    display:flex; align-items:center; gap:12px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+    color: color-mix(in oklab, var(--cloud) 55%, transparent);
+    margin-bottom: 36px;
+  }
+  .section-eyebrow .dot{ width:5px; height:5px; border-radius:50%; background:var(--sky);}
+
+  /* ---------- MANIFESTO ---------- */
+  .manifesto{ text-align:center; }
+  .manifesto .display{
+    font-size: clamp(28px, 3.6vw, 50px);
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    max-width: 1100px; margin: 0 auto;
+    font-weight: 300;
+    color: var(--cream);
+    font-variation-settings: "opsz" 50, "SOFT" 50;
+  }
+  .manifesto .signature{
+    margin-top: 56px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.32em; text-transform:uppercase;
+    color: color-mix(in oklab, var(--cloud) 55%, transparent);
+  }
+  .manifesto .star{
+    font-family:var(--serif); font-style:italic; font-size: 28px;
+    color: var(--sky);
+    margin: 0 0 18px;
+  }
+
+  /* ---------- PRODUCTS ---------- */
+  .section-head{
+    display:grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items:end; margin-bottom: 64px;
+  }
+  @media (max-width: 880px){ .section-head{ grid-template-columns:1fr; gap:28px;} }
+  .section-head h2{
+    font-family:var(--serif); font-weight:300;
+    font-size: clamp(40px, 5.5vw, 80px);
+    line-height: 1; letter-spacing:-0.035em;
+    margin: 0; color: var(--cream);
+    font-variation-settings: "opsz" 144;
+  }
+  .section-head p{
+    font-size:15px; line-height:1.7; max-width: 440px;
+    color: color-mix(in oklab, var(--cloud) 80%, transparent);
+    margin: 0;
+  }
+
+  .products{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px;}
+  @media (max-width: 980px){ .products{ grid-template-columns:1fr;} }
+  .pcard{
+    background: var(--slate);
+    border-radius: 14px;
+    overflow:hidden;
+    display:flex; flex-direction:column;
+    border:1px solid var(--line);
+    transition: transform .5s, border-color .5s;
+  }
+  .pcard:hover{ transform: translateY(-4px); border-color: var(--line-strong);}
+  .pcard image-slot{
+    width:100%; height: 420px;
+    background: color-mix(in oklab, var(--midnight) 80%, var(--slate));
+    --image-slot-border-color: var(--line);
+    --image-slot-color: color-mix(in oklab, var(--cloud) 35%, transparent);
+  }
+  .pcard .pbody{
+    padding: 28px 28px 32px;
+    display:flex; flex-direction:column; gap:14px;
+    border-top: 1px solid var(--line);
+  }
+  .pcard .ptag{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.22em; text-transform:uppercase;
+    color: var(--sky);
+  }
+  .pcard h3{
+    font-family:var(--serif); font-weight:300; font-size: 28px; line-height:1.1;
+    letter-spacing:-0.02em; margin:0; color: var(--cream);
+  }
+  .pcard p{ margin:0; font-size:14px; line-height:1.6; color: color-mix(in oklab, var(--cloud) 70%, transparent); }
+  .pcard .prow{
+    margin-top: 10px;
+    display:flex; justify-content:space-between; align-items:center;
+    font-family:var(--mono); font-size:13px; letter-spacing:.04em;
+    color: var(--cream);
+    border-top:1px dashed var(--line); padding-top:18px;
+  }
+  .pcard .prow .buy{
+    font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+    color: color-mix(in oklab, var(--cloud) 70%, transparent);
+    transition: color .25s;
+  }
+  .pcard:hover .buy{ color: var(--cream);}
+
+  /* ---------- RITUAL ---------- */
+  .ritual-intro{
+    display:grid; grid-template-columns: 1fr 1fr; gap:60px; align-items:end;
+    margin-bottom: 80px;
+  }
+  @media (max-width: 880px){ .ritual-intro{ grid-template-columns:1fr; gap:20px;} }
+  .ritual-step{
+    display:grid; grid-template-columns: 1fr 1fr;
+    gap: clamp(40px, 7vw, 120px);
+    align-items:center;
+    padding: clamp(60px, 9vw, 120px) 0;
+    border-top:1px solid var(--line);
+  }
+  .ritual-step:nth-child(even) .rt-img{ order: 2; }
+  .ritual-step:nth-child(even) .rt-txt{ order: 1; }
+  @media (max-width: 880px){
+    .ritual-step, .ritual-step:nth-child(even){ grid-template-columns:1fr;}
+    .ritual-step .rt-img, .ritual-step:nth-child(even) .rt-img{ order:0;}
+  }
+  .rt-img image-slot{
+    width:100%; height: clamp(360px, 52vw, 620px);
+    border-radius: 12px;
+    background: color-mix(in oklab, var(--midnight) 70%, var(--slate));
+    --image-slot-border-color: var(--line);
+    --image-slot-color: color-mix(in oklab, var(--cloud) 40%, transparent);
+  }
+  .rt-txt .time{
+    font-family:var(--mono); font-size:12px; letter-spacing:.32em;
+    color: var(--sky); margin-bottom: 18px;
+  }
+  .rt-txt h3{
+    font-family:var(--serif); font-weight:300;
+    font-size: clamp(40px, 5vw, 72px);
+    line-height: 1; letter-spacing:-0.035em;
+    color:var(--cream); margin: 0 0 28px;
+    font-variation-settings:"opsz" 144;
+  }
+  .rt-txt p{
+    font-size: 16px; line-height: 1.75; max-width: 480px;
+    color: color-mix(in oklab, var(--cloud) 80%, transparent);
+    margin: 0 0 28px;
+  }
+  .rt-link{
+    font-family:var(--mono); font-size: 11px; letter-spacing:.24em; text-transform:uppercase;
+    color: var(--cream); padding-bottom: 6px;
+    border-bottom: 1px solid var(--line-strong);
+    display:inline-flex; align-items:center; gap:10px;
+  }
+
+  /* ---------- QUOTES ---------- */
+  .quotes{ text-align:center; min-height: 60vh; display:flex; align-items:center;}
+  .quotes-shell{ position:relative; width:100%; min-height: 380px;}
+  .qslide{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    opacity:0; transition: opacity 1.4s ease; pointer-events:none;
+  }
+  .qslide.is-active{ opacity:1; }
+  .qslide blockquote{
+    font-family:var(--serif); font-weight:300;
+    font-size: clamp(30px, 4.2vw, 64px);
+    line-height: 1.18; letter-spacing:-0.025em;
+    color:var(--cream); max-width: 1100px; margin: 0 0 36px;
+    font-variation-settings:"opsz" 100, "SOFT" 50;
+  }
+  .qslide cite{
+    font-style: normal;
+    font-family:var(--mono); font-size:11px; letter-spacing:.32em; text-transform:uppercase;
+    color: color-mix(in oklab, var(--cloud) 60%, transparent);
+  }
+  .qdots{
+    margin-top: 56px;
+    display:flex; gap:10px; justify-content:center;
+  }
+  .qdot{ width:24px; height:1px; background: var(--line-strong); transition: background .4s, width .4s;}
+  .qdot.is-active{ background:var(--cream); width:48px;}
+
+  /* ---------- JOURNAL ---------- */
+  .journal-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px;}
+  @media (max-width: 980px){ .journal-grid{ grid-template-columns:1fr; }}
+  .jcard{
+    border:1px solid var(--line); border-radius: 12px;
+    padding: 36px 32px;
+    background: color-mix(in oklab, var(--slate) 35%, var(--midnight));
+    display:flex; flex-direction:column; gap:22px; min-height: 360px;
+    transition: background .4s, border-color .4s;
+  }
+  .jcard:hover{ background: var(--slate); border-color: var(--line-strong);}
+  .jcard .jmeta{ display:flex; justify-content:space-between; align-items:center;
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.22em; text-transform:uppercase;
+    color: color-mix(in oklab, var(--cloud) 55%, transparent);
+  }
+  .jcard h3{
+    font-family:var(--serif); font-weight:300;
+    font-size: clamp(26px, 2.4vw, 34px);
+    line-height: 1.12; letter-spacing:-0.025em;
+    color: var(--cream); margin: auto 0 0;
+    font-variation-settings:"opsz" 80;
+  }
+  .jcard p{
+    margin: 0;
+    font-size:14px; line-height:1.65;
+    color: color-mix(in oklab, var(--cloud) 70%, transparent);
+  }
+  .jcard .read{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.24em; text-transform:uppercase;
+    color: var(--sky);
+    display:flex; align-items:center; gap:8px;
+  }
+
+  /* ---------- NEWSLETTER ---------- */
+  .newsletter{ text-align:center; padding: clamp(100px, 14vw, 180px) 0;}
+  .newsletter .eye{
+    font-family:var(--mono); font-size:11px; letter-spacing:.32em; text-transform:uppercase;
+    color: color-mix(in oklab, var(--midnight) 65%, transparent);
+    margin-bottom: 28px;
+  }
+  .newsletter h2{
+    font-family:var(--serif); font-weight:300;
+    font-size: clamp(48px, 7vw, 104px);
+    line-height: 0.95; letter-spacing:-0.04em;
+    color: var(--midnight);
+    margin: 0 0 18px;
+    font-variation-settings:"opsz" 144;
+  }
+  .newsletter .lede{
+    max-width: 540px; margin: 0 auto 56px;
+    font-size: 16px; line-height: 1.65;
+    color: color-mix(in oklab, var(--midnight) 75%, transparent);
+  }
+  .nl-form{
+    display:flex; align-items:stretch; gap:0;
+    max-width: 540px; margin: 0 auto;
+    border-bottom: 1px solid color-mix(in oklab, var(--midnight) 50%, transparent);
+    padding-bottom: 4px;
+  }
+  .nl-form input{
+    flex:1; border:0; background:transparent; outline:none;
+    font: 400 16px/1.4 var(--sans); color: var(--midnight);
+    padding: 14px 4px;
+  }
+  .nl-form input::placeholder{ color: color-mix(in oklab, var(--midnight) 55%, transparent);}
+  .nl-form button{
+    font-family:var(--mono); font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+    color: var(--midnight); padding: 10px 4px;
+    display:inline-flex; align-items:center; gap:10px;
+  }
+  .newsletter .count{
+    margin-top: 28px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.28em; text-transform:uppercase;
+    color: color-mix(in oklab, var(--midnight) 65%, transparent);
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    background: var(--midnight); color: var(--cloud);
+    padding: 80px 0 36px;
+    border-top: 1px solid var(--line);
+  }
+  .f-top{
+    display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px; margin-bottom: 80px;
+  }
+  @media (max-width: 880px){ .f-top{ grid-template-columns:1fr 1fr; gap:40px;}}
+  .f-brand .brand{ margin-bottom: 24px; }
+  .f-brand p{
+    max-width: 320px; font-size:14px; line-height:1.6;
+    color: color-mix(in oklab, var(--cloud) 65%, transparent);
+  }
+  .f-col h4{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.28em; text-transform:uppercase;
+    color: color-mix(in oklab, var(--cloud) 55%, transparent);
+    margin: 0 0 22px; font-weight: 500;
+  }
+  .f-col ul{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap: 14px;}
+  .f-col a{
+    font-size: 14px;
+    color: color-mix(in oklab, var(--cloud) 85%, transparent);
+    transition: color .25s;
+  }
+  .f-col a:hover{ color: var(--cream);}
+  .f-bottom{
+    display:flex; justify-content:space-between; align-items:center;
+    padding-top: 32px; border-top: 1px solid var(--line);
+    font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+    color: color-mix(in oklab, var(--cloud) 55%, transparent);
+    gap: 24px; flex-wrap:wrap;
+  }
+  .f-bottom .micro{ font-family:var(--serif); font-style:italic; font-size:15px;
+    letter-spacing:0; text-transform:none; color: color-mix(in oklab, var(--cloud) 75%, transparent);}
+
+  /* ---------- Tweaks panel ---------- */
+  .tw-panel{
+    position:fixed; bottom: 24px; right: 24px; z-index: 10000;
+    width: 300px; background: #0c0c12; color: var(--cloud);
+    border:1px solid var(--line-strong); border-radius: 12px;
+    padding: 18px; font: 400 13px/1.5 var(--sans);
+    box-shadow: 0 24px 60px rgba(0,0,0,.6);
+    display:none;
+  }
+  .tw-panel.is-open{ display:block; }
+  .tw-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom: 16px;}
+  .tw-head h5{ margin:0; font-family:var(--mono); font-size:11px; letter-spacing:.28em; text-transform:uppercase; color:var(--cream);}
+  .tw-close{ font-size:18px; color:var(--cloud); line-height:1;}
+  .tw-row{ display:flex; flex-direction:column; gap:6px; margin-bottom: 14px;}
+  .tw-row label{ font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase; color: color-mix(in oklab, var(--cloud) 55%, transparent);}
+  .tw-row select, .tw-row input[type=text]{
+    background: #15151c; color:var(--cream); border:1px solid var(--line);
+    border-radius:6px; padding: 8px 10px; font: 400 13px var(--sans);
+  }
+  .tw-row textarea{
+    background: #15151c; color:var(--cream); border:1px solid var(--line);
+    border-radius:6px; padding: 8px 10px; font: 400 13px var(--sans); resize:vertical; min-height: 56px;
+  }
+  .tw-row input[type=range]{ accent-color: var(--sky); }
+  .tw-seg{ display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden;}
+  .tw-seg button{
+    flex:1; padding: 8px 6px; font: 500 11px var(--mono); letter-spacing:.18em; text-transform:uppercase;
+    color: color-mix(in oklab, var(--cloud) 70%, transparent);
+    border-right: 1px solid var(--line);
+  }
+  .tw-seg button:last-child{ border-right:0; }
+  .tw-seg button.is-on{ background: var(--cream); color: var(--midnight);}
+  .tw-row .check{ display:flex; align-items:center; gap:10px; }
+</style>
+</head>
+<body>
+
+<!-- ============== HERO + NAV ============== -->
+<section class="hero" data-screen-label="01 Hero">
+  <nav class="nav">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"></span>
+      <span>AETHON</span>
+    </div>
+    <div class="nav-links">
+      <a href="#manifesto">Manifesto</a>
+      <a href="#products">Objects</a>
+      <a href="#ritual">Ritual</a>
+      <a href="#journal">Journal</a>
+      <a href="#newsletter">Letters</a>
+    </div>
+    <a href="#newsletter" class="nav-cta">Enter the quiet</a>
+  </nav>
+
+  <div class="hero-card">
+    <video autoplay muted loop playsinline preload="auto">
+      <source src="assets/aethon-hero.mp4" type="video/mp4" />
+    </video>
+    <div class="hero-content">
+      <div class="hero-top">
+        <div class="eyebrow">N°.001 &nbsp;/&nbsp; Mindful Objects</div>
+        <div class="hero-meta">
+          <span>Est. MMXXVI</span>
+          <span>Jakarta — Anywhere</span>
+        </div>
+      </div>
+
+      <div class="hero-bottom">
+        <h1 class="hero-h1 display" id="heroHeadline">Read the universe.
+One page at a time.</h1>
+        <div class="hero-row">
+          <p class="hero-sub">Aethon adalah ruang sunyi untuk pikiran yang haus akan cahaya. Objek-objek harian yang dibuat untuk ditemani buku, lilin, dan keheningan jam-jam awal pagi.</p>
+          <a href="#products" class="ghost-cta">
+            Begin the ritual
+            <span class="arrow" aria-hidden="true">
+              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h8M7 2l4 4-4 4"/></svg>
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== MANIFESTO ============== -->
+<section class="band band-midnight manifesto" id="manifesto" data-screen-label="02 Manifesto">
+  <div class="shell">
+    <div class="star">✦</div>
+    <p class="display">
+      Kami percaya ketenangan pikiran adalah kemewahan tertinggi —
+      bukan liburan mewah, bukan barang mahal,
+      tapi ruang untuk berpikir, membaca, dan tumbuh.
+      Aethon dibuat untuk mereka yang menyalakan lentera kecil
+      di dalam kepalanya sendiri, lalu membaca dunia
+      satu halaman demi satu halaman.
+    </p>
+    <div class="signature">— A manifesto for the quiet thinker</div>
+  </div>
+</section>
+
+<!-- ============== PRODUCTS ============== -->
+<section class="band band-slate" id="products" data-screen-label="03 Products">
+  <div class="shell">
+    <div class="section-eyebrow"><span class="dot"></span> N°.02 — Objects</div>
+    <div class="section-head">
+      <h2>Objects<br/>for slow thinking.</h2>
+      <p>Produk yang dikurasi untuk menemani sesi membaca, menulis, dan diam. Bukan koleksi — ini perangkat untuk pikiran yang ingin pulang ke dalam dirinya sendiri.</p>
+    </div>
+
+    <div class="products">
+      <article class="pcard">
+        <image-slot id="product-journal" placeholder="Foto jurnal hardcover — dark moody, top-down"></image-slot>
+        <div class="pbody">
+          <span class="ptag">N°.01 / Journal</span>
+          <h3>The Midnight Journal</h3>
+          <p>Hardcover linen hitam dengan 240 halaman dotted cream paper. Untuk ide-ide yang hanya bisa lahir setelah pukul sebelas malam.</p>
+          <div class="prow"><span>IDR 480.000</span><span class="buy">Add to ritual →</span></div>
+        </div>
+      </article>
+
+      <article class="pcard">
+        <image-slot id="product-candle" placeholder="Foto candle matte hitam — flame menyala, low-key lighting"></image-slot>
+        <div class="pbody">
+          <span class="ptag">N°.02 / Candle</span>
+          <h3>Scent of Thinking</h3>
+          <p>Cedar, vanilla, dan petrichor. Lilin 220g yang dirancang untuk menemani tiga jam membaca di kursi yang sama.</p>
+          <div class="prow"><span>IDR 320.000</span><span class="buy">Add to ritual →</span></div>
+        </div>
+      </article>
+
+      <article class="pcard">
+        <image-slot id="product-tea" placeholder="Foto teh herbal — kaleng matte, daun teh kering"></image-slot>
+        <div class="pbody">
+          <span class="ptag">N°.03 / Tea</span>
+          <h3>Solitude Blend</h3>
+          <p>Chamomile, lavender, dan rooibos. Blend teh herbal untuk pagi-pagi yang dimulai sebelum dunia memintamu menjadi sibuk.</p>
+          <div class="prow"><span>IDR 180.000</span><span class="buy">Add to ritual →</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============== THE RITUAL ============== -->
+<section class="band band-midnight" id="ritual" data-screen-label="04 The Ritual">
+  <div class="shell">
+    <div class="section-eyebrow"><span class="dot"></span> N°.03 — The Ritual</div>
+    <div class="ritual-intro">
+      <h2 class="display" style="font-size: clamp(40px,5.5vw,80px); margin:0;">Your 6AM ritual<br/>starts with this.</h2>
+      <p style="font-size:16px; line-height:1.7; color: color-mix(in oklab, var(--cloud) 80%, transparent); max-width:440px; margin:0;">Bukan sekadar produk. Ini adalah tiga gerakan kecil yang mengembalikan satu hari ke pusatnya — sebelum dunia sempat mengambilnya darimu.</p>
+    </div>
+
+    <article class="ritual-step">
+      <div class="rt-img">
+        <image-slot id="ritual-1" placeholder="06:00 — uap teh, jendela gelap, lampu meja"></image-slot>
+      </div>
+      <div class="rt-txt">
+        <div class="time">06:00 — Awakening</div>
+        <h3>Steep the silence.</h3>
+        <p>Sebelum notifikasi pertama, sebelum suara apapun. Seduh satu sendok Solitude Blend dalam air panas. Tunggu lima menit. Tidak melakukan apa-apa. Itu ritualnya — bukan tehnya.</p>
+        <a class="rt-link">Read more →</a>
+      </div>
+    </article>
+
+    <article class="ritual-step">
+      <div class="rt-img">
+        <image-slot id="ritual-2" placeholder="12:00 — jurnal terbuka, pena, secangkir kopi"></image-slot>
+      </div>
+      <div class="rt-txt">
+        <div class="time">12:00 — Pause</div>
+        <h3>Write what cannot<br/>be said aloud.</h3>
+        <p>Tengah hari adalah jam yang paling jujur. Buka The Midnight Journal, tulis satu halaman tanpa menyensor. Tidak ada pembaca selain kamu di esok hari. Itu sudah cukup.</p>
+        <a class="rt-link">Read more →</a>
+      </div>
+    </article>
+
+    <article class="ritual-step">
+      <div class="rt-img">
+        <image-slot id="ritual-3" placeholder="21:00 — lilin menyala, buku di pangkuan, kamar gelap"></image-slot>
+      </div>
+      <div class="rt-txt">
+        <div class="time">21:00 — Return</div>
+        <h3>Light one candle.<br/>Close the day.</h3>
+        <p>Nyalakan Scent of Thinking. Baca dua puluh halaman dari buku apa saja — fiksi, filsafat, puisi. Kemudian tiup lilinnya. Itu cara hari yang baik selalu diakhiri.</p>
+        <a class="rt-link">Read more →</a>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============== QUOTES ============== -->
+<section class="band band-slate quotes" data-screen-label="05 Philosophy">
+  <div class="shell">
+    <div class="section-eyebrow" style="justify-content:center;"><span class="dot"></span> N°.04 — Philosophy</div>
+    <div class="quotes-shell" id="quotesShell">
+      <div class="qslide is-active">
+        <blockquote>"You have power over your mind — not outside events. Realize this, and you will find strength."</blockquote>
+        <cite>— Marcus Aurelius · Meditations</cite>
+      </div>
+      <div class="qslide">
+        <blockquote>"Silence is not an absence. It is the presence of everything we usually drown out."</blockquote>
+        <cite>— Aethon Notebook · N°.07</cite>
+      </div>
+      <div class="qslide">
+        <blockquote>"Don't be satisfied with the stories that come before you. Unfold your own myth."</blockquote>
+        <cite>— Jalāl ad-Dīn Rumi</cite>
+      </div>
+      <div class="qslide">
+        <blockquote>"A book must be the axe for the frozen sea inside us."</blockquote>
+        <cite>— Franz Kafka · Letter to Pollak, 1904</cite>
+      </div>
+    </div>
+    <div class="qdots" id="qdots">
+      <div class="qdot is-active"></div>
+      <div class="qdot"></div>
+      <div class="qdot"></div>
+      <div class="qdot"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============== JOURNAL ============== -->
+<section class="band band-midnight" id="journal" data-screen-label="06 Journal">
+  <div class="shell">
+    <div class="section-eyebrow"><span class="dot"></span> N°.05 — Journal</div>
+    <div class="section-head">
+      <h2>Notes from<br/>the quiet room.</h2>
+      <p>Esai pendek tentang seni berpikir lambat, kebiasaan-kebiasaan yang membentuk pikiran, dan cara membaca dunia tanpa terburu-buru.</p>
+    </div>
+
+    <div class="journal-grid">
+      <article class="jcard">
+        <div class="jmeta"><span>Essay · 04 min</span><span>05 / 26</span></div>
+        <p>Ketika dunia memuja produktivitas, ada satu kemewahan yang nyaris hilang: kemampuan untuk tidak melakukan apa-apa, tanpa rasa bersalah.</p>
+        <h3>On the Art of Doing Nothing</h3>
+        <span class="read">Read essay →</span>
+      </article>
+
+      <article class="jcard">
+        <div class="jmeta"><span>Essay · 06 min</span><span>04 / 26</span></div>
+        <p>Diam bukan kekosongan — ia keterampilan. Tentang bagaimana kita melatih telinga untuk mendengar hal-hal yang tidak diucapkan keras-keras.</p>
+        <h3>Why Silence is a Skill</h3>
+        <span class="read">Read essay →</span>
+      </article>
+
+      <article class="jcard">
+        <div class="jmeta"><span>Field Notes · 03 min</span><span>03 / 26</span></div>
+        <p>Membaca pelan adalah perlawanan kecil terhadap algoritma. Catatan tentang menemukan kembali kesabaran dalam satu paragraf yang tepat.</p>
+        <h3>The Slow Reader's Manifesto</h3>
+        <span class="read">Read essay →</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============== NEWSLETTER ============== -->
+<section class="band band-sky newsletter" id="newsletter" data-screen-label="07 Newsletter">
+  <div class="shell">
+    <div class="eye">N°.06 — Letters</div>
+    <h2>Join 4,000<br/>quiet thinkers.</h2>
+    <p class="lede">Satu surat setiap hari Minggu pagi. Bukan promosi. Bacaan singkat, kutipan, dan satu pertanyaan yang akan menemanimu selama satu minggu.</p>
+    <form class="nl-form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Welcome ✦';">
+      <input type="email" placeholder="your@quiet.email" required />
+      <button type="submit">Subscribe →</button>
+    </form>
+    <div class="count">— Read in 38 countries —</div>
+  </div>
+</section>
+
+<!-- ============== FOOTER ============== -->
+<footer data-screen-label="08 Footer">
+  <div class="shell">
+    <div class="f-top">
+      <div class="f-brand">
+        <div class="brand"><span class="mark" aria-hidden="true"></span><span>AETHON</span></div>
+        <p>Aethon — objects, words, and rituals for those who think in the dark. Made slowly, in Jakarta.</p>
+      </div>
+      <div class="f-col">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#">Journals</a></li>
+          <li><a href="#">Candles</a></li>
+          <li><a href="#">Teas</a></li>
+          <li><a href="#">Prints</a></li>
+        </ul>
+      </div>
+      <div class="f-col">
+        <h4>Read</h4>
+        <ul>
+          <li><a href="#">Manifesto</a></li>
+          <li><a href="#">Journal</a></li>
+          <li><a href="#">Philosophy</a></li>
+          <li><a href="#">Letters</a></li>
+        </ul>
+      </div>
+      <div class="f-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="#">hello@aethon.co</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Spotify</a></li>
+          <li><a href="#">Press</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="f-bottom">
+      <span>© MMXXVI Aethon Studio</span>
+      <span class="micro">For those who think in the dark.</span>
+      <span>Privacy · Terms</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============== TWEAKS PANEL ============== -->
+<div class="tw-panel" id="twPanel" aria-hidden="true">
+  <div class="tw-head">
+    <h5>Tweaks</h5>
+    <button class="tw-close" id="twClose" aria-label="Close">×</button>
+  </div>
+
+  <div class="tw-row">
+    <label>Mood</label>
+    <div class="tw-seg" data-key="mood">
+      <button data-val="midnight">Midnight</button>
+      <button data-val="slate">Slate</button>
+      <button data-val="ivory">Ivory</button>
+    </div>
+  </div>
+
+  <div class="tw-row">
+    <label>Type pairing</label>
+    <select id="twFont">
+      <option value="fraunces-geist">Fraunces × Geist</option>
+      <option value="newsreader-manrope">Newsreader × Manrope</option>
+      <option value="instrument-mono">Instrument × Mono</option>
+    </select>
+  </div>
+
+  <div class="tw-row">
+    <label>Hero headline</label>
+    <textarea id="twHeadline" rows="2"></textarea>
+  </div>
+
+  <div class="tw-row">
+    <label>Carousel speed (s)</label>
+    <input type="range" id="twSpeed" min="3" max="15" step="1" />
+  </div>
+
+  <div class="tw-row">
+    <label class="check"><input type="checkbox" id="twGrain"/> Grain texture</label>
+  </div>
+</div>
+
+<!-- Image-slot web component -->
+<script src="assets/image-slot.js"></script>
+
+<script>
+/* ----- Apply initial tweak state ----- */
+(function(){
+  const t = window.__AETHON_TWEAKS;
+  const html = document.documentElement;
+  html.setAttribute('data-mood', t.mood);
+  html.setAttribute('data-font', t.fontPairing);
+  document.body.setAttribute('data-grain', t.showGrain ? 'true' : 'false');
+  document.getElementById('heroHeadline').textContent = t.heroHeadline;
+})();
+
+/* ----- Quotes carousel ----- */
+(function(){
+  const slides = document.querySelectorAll('#quotesShell .qslide');
+  const dots = document.querySelectorAll('#qdots .qdot');
+  let i = 0;
+  function go(n){
+    i = (n + slides.length) % slides.length;
+    slides.forEach((s,k)=> s.classList.toggle('is-active', k===i));
+    dots.forEach((d,k)=> d.classList.toggle('is-active', k===i));
+  }
+  dots.forEach((d,k)=> d.addEventListener('click', ()=> { go(k); reset(); }));
+  let timer;
+  function loop(){
+    const sec = (window.__AETHON_TWEAKS.carouselSpeed || 7) * 1000;
+    timer = setInterval(()=> go(i+1), sec);
+  }
+  function reset(){ clearInterval(timer); loop(); }
+  loop();
+  window.__resetCarousel = reset;
+})();
+
+/* ----- Tweaks panel + host protocol ----- */
+(function(){
+  const panel = document.getElementById('twPanel');
+  const closeBtn = document.getElementById('twClose');
+  const t = window.__AETHON_TWEAKS;
+
+  function persist(edits){
+    Object.assign(t, edits);
+    try{
+      window.parent.postMessage({type:'__edit_mode_set_keys', edits}, '*');
+    }catch(e){}
+  }
+
+  // Register listener BEFORE announcing
+  window.addEventListener('message', (e)=>{
+    if(!e.data || typeof e.data !== 'object') return;
+    if(e.data.type === '__activate_edit_mode'){ panel.classList.add('is-open'); }
+    if(e.data.type === '__deactivate_edit_mode'){ panel.classList.remove('is-open'); }
+  });
+  // Announce
+  try{ window.parent.postMessage({type:'__edit_mode_available'}, '*'); }catch(e){}
+
+  closeBtn.addEventListener('click', ()=>{
+    panel.classList.remove('is-open');
+    try{ window.parent.postMessage({type:'__edit_mode_dismissed'}, '*'); }catch(e){}
+  });
+
+  // Mood segmented
+  const seg = panel.querySelector('[data-key="mood"]');
+  function paintSeg(val){
+    seg.querySelectorAll('button').forEach(b=> b.classList.toggle('is-on', b.dataset.val===val));
+  }
+  paintSeg(t.mood);
+  seg.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const v = b.dataset.val;
+      document.documentElement.setAttribute('data-mood', v);
+      paintSeg(v);
+      persist({mood:v});
+    });
+  });
+
+  // Font select
+  const font = document.getElementById('twFont');
+  font.value = t.fontPairing;
+  font.addEventListener('change', ()=>{
+    document.documentElement.setAttribute('data-font', font.value);
+    persist({fontPairing: font.value});
+  });
+
+  // Headline textarea
+  const head = document.getElementById('twHeadline');
+  head.value = t.heroHeadline;
+  head.addEventListener('input', ()=>{
+    document.getElementById('heroHeadline').textContent = head.value;
+    persist({heroHeadline: head.value});
+  });
+
+  // Speed range
+  const spd = document.getElementById('twSpeed');
+  spd.value = t.carouselSpeed;
+  spd.addEventListener('input', ()=>{
+    persist({carouselSpeed: Number(spd.value)});
+    if(window.__resetCarousel) window.__resetCarousel();
+  });
+
+  // Grain
+  const grain = document.getElementById('twGrain');
+  grain.checked = !!t.showGrain;
+  grain.addEventListener('change', ()=>{
+    document.body.setAttribute('data-grain', grain.checked ? 'true' : 'false');
+    persist({showGrain: grain.checked});
+  });
+})();
+</script>
+
+</body>
+</html>
