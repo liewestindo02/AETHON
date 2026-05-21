@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/.image-slots.state.json", "destination": "/aethon/project/.image-slots.state.json" },
     { "source": "/assets/:path*", "destination": "/aethon/project/assets/:path*" },
     { "source": "/uploads/:path*", "destination": "/aethon/project/uploads/:path*" },
     { "source": "/", "destination": "/aethon/project/AETHON.html" }
